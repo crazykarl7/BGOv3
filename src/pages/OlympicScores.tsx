@@ -559,7 +559,7 @@ export default function OlympicScores() {
                                   options={medalOptions}
                                   isDisabled={!user?.is_admin || !row.playerId}
                                   placeholder="Select medal..."
-                                  className="w-32"
+                                  className="w-48"
                                   isClearable
                                   menuPortalTarget={document.body}
                                   menuPosition="fixed"
