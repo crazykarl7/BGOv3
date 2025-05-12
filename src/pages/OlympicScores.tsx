@@ -478,7 +478,7 @@ export default function OlympicScores() {
                           onChange={(e) => setOverrideMedals(e.target.checked)}
                           className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         />
-                    /*    <span className="text-sm font-medium text-gray-700">Override Medals</span>*/
+                        <span className="text-sm font-medium text-gray-700">Override Medals</span>
                       </label>
                     </div>
                   )}
