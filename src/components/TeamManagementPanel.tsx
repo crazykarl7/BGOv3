@@ -299,7 +299,11 @@ export default function TeamManagementPanel({
               <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
                 {events.map((event) => {
                   const isLocked = event.locked_at !== null && event.locked_at !== undefined;
-                  console.log(`Event ${event.name} - locked_at: ${event.locked_at}`);
+                  console.log(`Event ${event.name}:`, {
+                    id: event.id,
+                    locked_at: event.locked_at,
+                    isLocked: isLocked
+                  });
                   return (
                     <div key={event.id} className="flex items-center justify-between">
                       <div className="flex-1">
