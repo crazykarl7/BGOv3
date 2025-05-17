@@ -90,7 +90,8 @@ export default function OlympicScores() {
               games:event_game (
                 game:game_id (*)
               )
-            )
+            ),
+            locked_at
           `)
           .eq('olympic_id', olympicId),
         supabase
@@ -286,6 +287,16 @@ export default function OlympicScores() {
           );
 
         if (insertError) throw insertError;
+
+        // Lock the event assignments
+        const { error: lockError } = await supabase
+          .from('olympic_event')
+          .update({ locked_at: new Date().toISOString() })
+          .eq('olympic_id', olympicId)
+          .eq('event_id', selectedEvent)
+          .is('locked_at', null);
+
+        if (lockError) throw lockError;
       }
 
       await fetchData();

@@ -25,6 +25,10 @@ interface Assignment {
   player_id: string;
 }
 
+interface EventWithLock extends Event {
+  locked_at?: string | null;
+}
+
 export default function TeamManagementPanel({
   team,
   events,
@@ -157,6 +161,7 @@ export default function TeamManagementPanel({
     }
     setEditingAssignments(false);
     setError(null);
+    
     setSuccess(null);
   };
 
@@ -292,44 +297,50 @@ export default function TeamManagementPanel({
                 )}
               </div>
               <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-                {events.map((event) => (
-                  <div key={event.id} className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <h5 className="text-sm font-medium text-gray-900">{event.name}</h5>
-                      {event.description && (
-                        <p className="text-sm text-gray-500 mt-1">{event.description}</p>
-                      )}
+                {events.map((event) => {
+                  const isLocked = event.locked_at !== null && event.locked_at !== undefined;
+                  return (
+                    <div key={event.id} className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h5 className="text-sm font-medium text-gray-900">{event.name}</h5>
+                        {event.description && (
+                          <p className="text-sm text-gray-500 mt-1">{event.description}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        {editingAssignments ? (
+                          <Select
+                            className="w-64"
+                            value={getCurrentAssignment(event.id)}
+                            onChange={(option: any) => {
+                              handleAssignmentChange(event.id, option ? option.value : '');
+                            }}
+                            options={team.members?.map(member => ({
+                              value: member.player?.id || '',
+                              label: member.player?.full_name || member.player?.username || ''
+                            })) || []}
+                            isClearable
+                            isDisabled={loading || isLocked}
+                            placeholder="Select player"
+                          />
+                        ) : (
+                          <div className="text-sm">
+                            {getCurrentAssignment(event.id) ? (
+                              <span className="font-medium text-gray-900">
+                                {getCurrentAssignment(event.id)?.label}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500">Unassigned</span>
+                            )}
+                          </div>
+                        )}
+                        {isLocked && (
+                          <span className="text-xs text-gray-500">(Locked)</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-4">
-                      {editingAssignments ? (
-                        <Select
-                          className="w-64"
-                          value={getCurrentAssignment(event.id)}
-                          onChange={(option: any) => {
-                            handleAssignmentChange(event.id, option ? option.value : '');
-                          }}
-                          options={team.members?.map(member => ({
-                            value: member.player?.id || '',
-                            label: member.player?.full_name || member.player?.username || ''
-                          })) || []}
-                          isClearable
-                          isDisabled={loading}
-                          placeholder="Select player"
-                        />
-                      ) : (
-                        <div className="text-sm">
-                          {getCurrentAssignment(event.id) ? (
-                            <span className="font-medium text-gray-900">
-                              {getCurrentAssignment(event.id)?.label}
-                            </span>
-                          ) : (
-                            <span className="text-gray-500">Unassigned</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {editingAssignments && (
                   <div className="flex justify-end space-x-3 mt-6">
