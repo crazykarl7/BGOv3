@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Olympic, Event, Game, Profile, GameScore } from '../types/database';
-import { Trophy, ArrowLeft, LogOut, ChevronRight, Medal, Save, Check, UserPlus } from 'lucide-react';
+import { Trophy, ArrowLeft, LogOut, ChevronRight, Medal, Save, Check, UserPlus, Clock } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import Select from 'react-select';
 import clsx from 'clsx';
@@ -12,6 +12,7 @@ interface ScoreRow {
   playerId: string;
   score: number;
   points: number;
+  time_to_play?: number | null;
   medal?: 'gold' | 'silver' | 'bronze';
 }
 
@@ -71,7 +72,8 @@ export default function OlympicScores() {
     setScoreRows(Array(numScoreRows).fill({
       playerId: '',
       score: 0,
-      points: 0
+      points: 0,
+      time_to_play: null
     }));
     setNumScoreRows(4);
   };
@@ -168,7 +170,8 @@ export default function OlympicScores() {
         const newScoreRows = Array(newNumScoreRows).fill({
           playerId: '',
           score: 0,
-          points: 0
+          points: 0,
+          time_to_play: null
         });
 
         scores.forEach((score, index) => {
@@ -178,6 +181,7 @@ export default function OlympicScores() {
               playerId: score.player_id,
               score: score.score,
               points: score.points,
+              time_to_play: score.time_to_play,
               medal: score.medal,
             };
           }
@@ -283,6 +287,7 @@ export default function OlympicScores() {
               score: row.score,
               points: points[index],
               medal: medals[index],
+              time_to_play: row.time_to_play
             }))
           );
 
@@ -354,7 +359,7 @@ export default function OlympicScores() {
       setNumScoreRows(prev => prev + 1);
       setScoreRows(prev => [
         ...prev,
-        { playerId: '', score: 0, points: 0 }
+        { playerId: '', score: 0, points: 0, time_to_play: null }
       ]);
     }
   };
@@ -505,6 +510,9 @@ export default function OlympicScores() {
                             Score
                           </th>
                           <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            Time (minutes)
+                          </th>
+                          <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                             {overrideMedals ? 'Medal' : 'Medal & Points'}
                           </th>
                         </tr>
@@ -557,6 +565,24 @@ export default function OlympicScores() {
                                 disabled={!user?.is_admin}
                                 className="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
                               />
+                            </td>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center">
+                                <input
+                                  type="number"
+                                  value={row.time_to_play || ''}
+                                  onChange={(e) => {
+                                    const newRows = [...scoreRows];
+                                    const value = e.target.value === '' ? null : parseInt(e.target.value, 10);
+                                    newRows[index] = { ...row, time_to_play: value };
+                                    setScoreRows(newRows);
+                                  }}
+                                  disabled={!user?.is_admin}
+                                  placeholder="Optional"
+                                  className="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
+                                />
+                                <Clock className="h-4 w-4 text-gray-400 ml-2" />
+                              </div>
                             </td>
                             <td className="px-3 py-2">
                               {overrideMedals ? (

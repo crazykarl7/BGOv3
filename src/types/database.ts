@@ -50,6 +50,7 @@ export interface GameScore {
   player_id: string;
   score: number;
   points: number;
+  time_to_play?: number | null;
   medal?: 'gold' | 'silver' | 'bronze';
   created_at: string;
   updated_at: string;
