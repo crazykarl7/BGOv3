@@ -12,7 +12,6 @@ interface ScoreRow {
   playerId: string;
   score: number;
   points: number;
-  time_to_play?: number | null;
   medal?: 'gold' | 'silver' | 'bronze';
 }
 
@@ -53,6 +52,7 @@ export default function OlympicScores() {
   const [overrideMedals, setOverrideMedals] = useState(false);
   const [scoreRows, setScoreRows] = useState<ScoreRow[]>([]);
   const [numScoreRows, setNumScoreRows] = useState(4);
+  const [timeToPlay, setTimeToPlay] = useState<number | null>(null);
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
@@ -72,10 +72,10 @@ export default function OlympicScores() {
     setScoreRows(Array(numScoreRows).fill({
       playerId: '',
       score: 0,
-      points: 0,
-      time_to_play: null
+      points: 0
     }));
     setNumScoreRows(4);
+    setTimeToPlay(null);
   };
 
   const fetchData = async () => {
@@ -170,9 +170,11 @@ export default function OlympicScores() {
         const newScoreRows = Array(newNumScoreRows).fill({
           playerId: '',
           score: 0,
-          points: 0,
-          time_to_play: null
+          points: 0
         });
+
+        // Set the time to play from the first score (they should all be the same)
+        setTimeToPlay(scores[0].time_to_play);
 
         scores.forEach((score, index) => {
           if (index < newNumScoreRows) {
@@ -181,7 +183,6 @@ export default function OlympicScores() {
               playerId: score.player_id,
               score: score.score,
               points: score.points,
-              time_to_play: score.time_to_play,
               medal: score.medal,
             };
           }
@@ -287,7 +288,7 @@ export default function OlympicScores() {
               score: row.score,
               points: points[index],
               medal: medals[index],
-              time_to_play: row.time_to_play
+              time_to_play: timeToPlay
             }))
           );
 
@@ -359,7 +360,7 @@ export default function OlympicScores() {
       setNumScoreRows(prev => prev + 1);
       setScoreRows(prev => [
         ...prev,
-        { playerId: '', score: 0, points: 0, time_to_play: null }
+        { playerId: '', score: 0, points: 0 }
       ]);
     }
   };
@@ -510,9 +511,6 @@ export default function OlympicScores() {
                             Score
                           </th>
                           <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                            Time (minutes)
-                          </th>
-                          <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                             {overrideMedals ? 'Medal' : 'Medal & Points'}
                           </th>
                         </tr>
@@ -567,24 +565,6 @@ export default function OlympicScores() {
                               />
                             </td>
                             <td className="px-3 py-2">
-                              <div className="flex items-center">
-                                <input
-                                  type="number"
-                                  value={row.time_to_play || ''}
-                                  onChange={(e) => {
-                                    const newRows = [...scoreRows];
-                                    const value = e.target.value === '' ? null : parseInt(e.target.value, 10);
-                                    newRows[index] = { ...row, time_to_play: value };
-                                    setScoreRows(newRows);
-                                  }}
-                                  disabled={!user?.is_admin}
-                                  placeholder="Optional"
-                                  className="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
-                                />
-                                <Clock className="h-4 w-4 text-gray-400 ml-2" />
-                              </div>
-                            </td>
-                            <td className="px-3 py-2">
                               {overrideMedals ? (
                                 <Select
                                   value={row.medal ? medalOptions.find(option => option.value === row.medal) : null}
@@ -629,7 +609,7 @@ export default function OlympicScores() {
                     </table>
                   </div>
 
-                  <div className="mt-6 flex justify-between">
+                  <div className="mt-6 flex justify-between items-center">
                     {numScoreRows < players.length && (
                       <button
                         onClick={handleAddPlayer}
@@ -640,16 +620,34 @@ export default function OlympicScores() {
                       </button>
                     )}
 
-                    {user?.is_admin && (
-                      <button
-                        onClick={handleSaveScores}
-                        disabled={saving}
-                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                      >
-                        <Save className="h-5 w-5 mr-2" />
-                        {saving ? 'Saving...' : 'Save Scores'}
-                      </button>
-                    )}
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <label className="text-sm font-medium text-gray-700">Time to Play:</label>
+                        <div className="flex items-center">
+                          <input
+                            type="number"
+                            value={timeToPlay || ''}
+                            onChange={(e) => setTimeToPlay(e.target.value === '' ? null : parseInt(e.target.value, 10))}
+                            placeholder="Optional"
+                            className="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            disabled={!user?.is_admin}
+                          />
+                          <span className="ml-2 text-sm text-gray-500">minutes</span>
+                          <Clock className="h-4 w-4 text-gray-400 ml-1" />
+                        </div>
+                      </div>
+
+                      {user?.is_admin && (
+                        <button
+                          onClick={handleSaveScores}
+                          disabled={saving}
+                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
+                          <Save className="h-5 w-5 mr-2" />
+                          {saving ? 'Saving...' : 'Save Scores'}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : (
