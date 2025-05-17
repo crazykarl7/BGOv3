@@ -69,7 +69,7 @@ export default function TeamAdmin() {
       setUserTeam(userTeam || null);
       setTeams(teamsData || []);
 
-      // Fetch events for this olympic
+      // Fetch events for this olympic with locked_at status
       const { data: eventsData, error: eventsError } = await supabase
         .from('olympic_event')
         .select(`
@@ -77,12 +77,21 @@ export default function TeamAdmin() {
             id,
             name,
             description
-          )
+          ),
+          locked_at
         `)
         .eq('olympic_id', olympicId);
 
       if (eventsError) throw eventsError;
-      setEvents(eventsData.map(e => e.event) || []);
+
+      // Transform the data to include locked_at in the event object
+      const processedEvents = eventsData.map(item => ({
+        ...item.event,
+        locked_at: item.locked_at
+      }));
+
+      console.log('Fetched events with locked_at:', processedEvents);
+      setEvents(processedEvents || []);
     } catch (error: any) {
       setError(error.message);
     } finally {

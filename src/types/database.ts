@@ -27,6 +27,7 @@ export interface Event {
   created_at: string;
   updated_at: string;
   games?: Game[];
+  locked_at?: string | null;
 }
 
 export interface Olympic {
