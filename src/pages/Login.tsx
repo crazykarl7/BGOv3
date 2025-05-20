@@ -59,7 +59,7 @@ export default function Login() {
             <img 
               src="https://raw.githubusercontent.com/crazykarl7/BGOv3/refs/heads/main/src/lib/BGO_logo_final.png"
               alt="Board Game Olympics Logo"
-              className="mx-auto h-128 w-auto"
+              className="mx-auto h-100 w-auto"
               onError={() => {
                 console.error('Failed to load logo image');
                 setImageError(true);
