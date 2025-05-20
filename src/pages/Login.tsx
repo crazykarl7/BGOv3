@@ -57,7 +57,7 @@ export default function Login() {
         <div className="text-center">
           {!imageError ? (
             <img 
-              src="https://raw.githubusercontent.com/jmszanski/bgo-logo/main/bgo-logo.png"
+              src="https://raw.githubusercontent.com/crazykarl7/BGOv3/refs/heads/main/src/lib/BGO_logo_final.png"
               alt="Board Game Olympics Logo"
               className="mx-auto h-32 w-auto"
               onError={() => {
