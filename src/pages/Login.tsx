@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
-import { LogIn } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -55,7 +53,11 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
         <div className="text-center">
-          <LogIn className="mx-auto h-12 w-12 text-indigo-600" />
+          <img 
+            src="https://raw.githubusercontent.com/jmszanski/bgo-logo/main/bgo-logo.png" 
+            alt="Board Game Olympics Logo" 
+            className="mx-auto h-32 w-auto"
+          />
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
         </div>
         {error && (
@@ -97,20 +99,6 @@ export default function Login() {
                 disabled={loading}
               />
             </div>
-            { /*  <div className="flex items-center">
-              <input
-                id="isAdmin"
-                name="isAdmin"
-                type="checkbox"
-                checked={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.checked)}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                disabled={loading}
-              />
-              <label htmlFor="isAdmin" className="ml-2 block text-sm text-gray-900">
-                Login as Administrator
-              </label>
-            </div>*/}
           </div>
 
           <div>
