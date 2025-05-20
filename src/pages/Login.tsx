@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
+import { Trophy } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
 
@@ -53,11 +55,19 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
         <div className="text-center">
-          <img 
-            src="https://raw.githubusercontent.com/jmszanski/bgo-logo/main/bgo-logo.png" 
-            alt="Board Game Olympics Logo" 
-            className="mx-auto h-32 w-auto"
-          />
+          {!imageError ? (
+            <img 
+              src="https://raw.githubusercontent.com/jmszanski/bgo-logo/main/bgo-logo.png"
+              alt="Board Game Olympics Logo"
+              className="mx-auto h-32 w-auto"
+              onError={() => {
+                console.error('Failed to load logo image');
+                setImageError(true);
+              }}
+            />
+          ) : (
+            <Trophy className="mx-auto h-16 w-16 text-indigo-600" />
+          )}
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
         </div>
         {error && (
