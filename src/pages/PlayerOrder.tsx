@@ -29,17 +29,6 @@ interface GeneratedPlayerList {
   timestamp: string;
 }
 
-interface PlayerOrderWithPrevious {
-  id: string;
-  tier: number;
-  previousTier?: number;
-}
-
-interface GeneratedPlayerListWithPrevious {
-  players: PlayerOrderWithPrevious[];
-  timestamp: string;
-}
-
 type Tab = 'players' | 'order';
 
 export default function PlayerOrder() {
@@ -51,7 +40,7 @@ export default function PlayerOrder() {
   const [activeTab, setActiveTab] = useState<Tab>('players');
   const [generating, setGenerating] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [generatedOrder, setGeneratedOrder] = useState<GeneratedPlayerListWithPrevious | null>(null);
+  const [generatedOrder, setGeneratedOrder] = useState<GeneratedPlayerList | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -86,13 +75,8 @@ export default function PlayerOrder() {
       // Parse existing generated order if it exists
       if (olympicResponse.data.last_generated_player_list) {
         try {
-          const parsed: GeneratedPlayerList = JSON.parse(olympicResponse.data.last_generated_player_list);
-          // Convert to the new format with previous tier support
-          const convertedOrder: GeneratedPlayerListWithPrevious = {
-            players: parsed.players.map(p => ({ ...p, previousTier: undefined })),
-            timestamp: parsed.timestamp
-          };
-          setGeneratedOrder(convertedOrder);
+          const parsed = JSON.parse(olympicResponse.data.last_generated_player_list);
+          setGeneratedOrder(parsed);
         } catch (e) {
           console.error('Failed to parse last_generated_player_list:', e);
         }
@@ -232,26 +216,12 @@ export default function PlayerOrder() {
 
       // Step 3: Determine NEW tiers from the newly generated list
       const playersPerTier = Math.ceil(orderedPlayersFromWeightedShuffle.length / 4);
-      const finalOrderedPlayersWithNewTiers = orderedPlayersFromWeightedShuffle.map((item, index) => {
-        const newTier = Math.min(Math.floor(index / playersPerTier) + 1, 4);
-        return {
-          player: item.player,
-          previousTier: item.tier, // Store the previous tier
-          tier: newTier // New tier based on position
-        };
-      });
+      const finalOrderedPlayersWithNewTiers = orderedPlayersFromWeightedShuffle.map((item, index) => ({
+        player: item.player,
+        tier: Math.min(Math.floor(index / playersPerTier) + 1, 4)
+      }));
 
-      // Step 4: Create the new generated list with newly assigned tiers and previous tier info
-      const newGeneratedListWithPrevious: GeneratedPlayerListWithPrevious = {
-        players: finalOrderedPlayersWithNewTiers.map(({ player, tier, previousTier }) => ({
-          id: player.id,
-          tier,
-          previousTier
-        })),
-        timestamp: new Date().toISOString()
-      };
-
-      // Create the simplified version for database storage (without previousTier)
+      // Step 4: Create the new generated list with newly assigned tiers
       const newGeneratedList: GeneratedPlayerList = {
         players: finalOrderedPlayersWithNewTiers.map(({ player, tier }) => ({
           id: player.id,
@@ -268,7 +238,7 @@ export default function PlayerOrder() {
 
       if (updateError) throw updateError;
 
-      setGeneratedOrder(newGeneratedListWithPrevious);
+      setGeneratedOrder(newGeneratedList);
       setActiveTab('order');
     } catch (error: any) {
       setError(error.message);
@@ -502,10 +472,7 @@ export default function PlayerOrder() {
                             Player
                           </th>
                           <th className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
-                            Previous Tier
-                          </th>
-                          <th className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
-                            Current Tier
+                            Tier
                           </th>
                         </tr>
                       </thead>
@@ -544,18 +511,6 @@ export default function PlayerOrder() {
                                   </div>
                                 ) : (
                                   <span className="text-gray-500">Player not found</span>
-                                )}
-                              </td>
-                              <td className="px-3 py-4 text-sm text-center">
-                                {entry.previousTier ? (
-                                  <span className={clsx(
-                                    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                                    getTierColor(entry.previousTier)
-                                  )}>
-                                    {getTierName(entry.previousTier)}
-                                  </span>
-                                ) : (
-                                  <span className="text-gray-500">New</span>
                                 )}
                               </td>
                               <td className="px-3 py-4 text-sm text-center">
