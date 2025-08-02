@@ -199,11 +199,14 @@ export default function OlympicEvents() {
                         <p className="mt-1 text-sm text-gray-500">{event.description}</p>
                       )}
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 sm:space-x-4">
                       <div className="flex items-center">
                         <ListChecks className="h-5 w-5 text-gray-400 mr-2" />
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-500 hidden sm:inline">
                           {event.games?.length || 0} games
+                        </span>
+                        <span className="text-sm text-gray-500 sm:hidden">
+                          {event.games?.length || 0}
                         </span>
                       </div>
                       <button
@@ -227,7 +230,7 @@ export default function OlympicEvents() {
                   {expandedEvents.has(event.id) && event.games && event.games.length > 0 && (
                     <div className="border-t border-gray-200 bg-gray-50 p-4">
                       <h4 className="text-sm font-medium text-gray-900 mb-3">Associated Games</h4>
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                         {event.games.map(({ game }) => (
                           <div
                             key={game.id}
@@ -251,17 +254,17 @@ export default function OlympicEvents() {
               ))}
             </div>
 
-            <div className="mt-6 flex justify-end space-x-3">
+            <div className="mt-6 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
               <button
                 onClick={() => navigate('/admin/olympics')}
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>

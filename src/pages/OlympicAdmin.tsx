@@ -179,7 +179,7 @@ export default function OlympicAdmin() {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </div>
-                  <div>
+                  <div className="sm:col-span-1">
                     <label className="block text-sm font-medium text-gray-700">Date</label>
                     <input
                       type="date"
@@ -190,7 +190,7 @@ export default function OlympicAdmin() {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </div>
-                  <div>
+                  <div className="sm:col-span-1">
                     <label className="block text-sm font-medium text-gray-700">
                       Registration Deadline
                     </label>
@@ -206,7 +206,7 @@ export default function OlympicAdmin() {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </div>
-                  <div>
+                  <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Description
                     </label>
@@ -230,7 +230,7 @@ export default function OlympicAdmin() {
                       />
                     </div>
                   </div>
-                  <div className="flex justify-end space-x-3">
+                  <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                     <button
                       type="button"
                       onClick={() => {
@@ -242,13 +242,13 @@ export default function OlympicAdmin() {
                           description: '',
                         });
                       }}
-                      className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                      className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                     >
                       {currentOlympic.id ? 'Update' : 'Create'}
                     </button>
@@ -265,7 +265,7 @@ export default function OlympicAdmin() {
               </button>
             )}
 
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
@@ -302,7 +302,7 @@ export default function OlympicAdmin() {
                         {format(new Date(olympic.registration_deadline), 'MMMM d, yyyy')}
                       </td>
                       <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
-                        <div className="flex justify-end space-x-3">
+                        <div className="flex flex-wrap justify-end gap-2">
                           <button
                             onClick={() => navigate(`/admin/olympics/${olympic.id}/players`)}
                             className="text-indigo-600 hover:text-indigo-900"

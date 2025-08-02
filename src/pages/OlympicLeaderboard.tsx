@@ -304,18 +304,20 @@ export default function OlympicLeaderboard() {
                 {showTeamLeaderboard ? (
                   <>
                     <User className="h-5 w-5 mr-2" />
-                    Show Individual Leaderboard
+                    <span className="hidden sm:inline">Show Individual Leaderboard</span>
+                    <span className="sm:hidden">Individual</span>
                   </>
                 ) : (
                   <>
                     <Users className="h-5 w-5 mr-2" />
-                    Show Team Leaderboard
+                    <span className="hidden sm:inline">Show Team Leaderboard</span>
+                    <span className="sm:hidden">Team</span>
                   </>
                 )}
               </button>
             </div>
 
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
@@ -418,7 +420,7 @@ export default function OlympicLeaderboard() {
                         <div className="text-gray-900">{entry.total_games}</div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <div className="flex items-center justify-center space-x-4">
+                        <div className="flex items-center justify-center space-x-2 sm:space-x-4">
                           <div className="flex items-center">
                             <Medal className="h-5 w-5 text-yellow-500 mr-1" />
                             <span>{entry.medals.gold}</span>
