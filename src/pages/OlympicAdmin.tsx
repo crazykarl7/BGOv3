@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   LogOut,
   ListChecks,
+  Shuffle,
 } from 'lucide-react';
 
 export default function OlympicAdmin() {
@@ -325,6 +326,13 @@ export default function OlympicAdmin() {
                               <Calendar className="h-5 w-5" />
                             </button>
                             <button
+                              onClick={() => navigate(`/admin/olympics/${olympic.id}/player-order`)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                              title="Generate Player Order"
+                            >
+                              <Shuffle className="h-5 w-5" />
+                            </button>
+                            <button
                               onClick={() => navigate(`/olympics/${olympic.id}/leaderboard`)}
                               className="text-indigo-600 hover:text-indigo-900"
                               title="View Leaderboard"
@@ -376,6 +384,13 @@ export default function OlympicAdmin() {
                             title="Enter Scores"
                           >
                             <Calendar className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={() => navigate(`/admin/olympics/${olympic.id}/player-order`)}
+                            className="text-indigo-600 hover:text-indigo-900"
+                            title="Generate Player Order"
+                          >
+                            <Shuffle className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => navigate(`/olympics/${olympic.id}/leaderboard`)}
