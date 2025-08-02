@@ -7,8 +7,8 @@ import { useAuthStore } from '../store/authStore';
 import clsx from 'clsx';
 
 interface GameWithScores extends Game {
-  hasScores?: boolean;
-  userScore?: GameScore;
+  isScored?: boolean;
+  isPlayedByUser?: boolean;
 }
 
 interface EventWithGames extends Event {
@@ -19,6 +19,7 @@ export default function MyOlympicScores() {
   const { olympicId } = useParams();
   const [olympic, setOlympic] = useState<Olympic | null>(null);
   const [events, setEvents] = useState<EventWithGames[]>([]);
+  const [gameScores, setGameScores] = useState<GameScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
@@ -29,6 +30,12 @@ export default function MyOlympicScores() {
   useEffect(() => {
     fetchData();
   }, [olympicId]);
+
+  useEffect(() => {
+    if (selectedGame && selectedEvent) {
+      fetchGameScores();
+    }
+  }, [selectedGame, selectedEvent]);
 
   const fetchData = async () => {
     if (!user) return;
@@ -56,19 +63,23 @@ export default function MyOlympicScores() {
 
       setOlympic(olympicResponse.data);
 
-      // Fetch user's scores for this olympic
-      const { data: userScores, error: scoresError } = await supabase
+      // Fetch all scores for this olympic
+      const { data: allScores, error: scoresError } = await supabase
         .from('game_score')
         .select('*')
-        .eq('olympic_id', olympicId)
-        .eq('player_id', user.id);
+        .eq('olympic_id', olympicId);
 
       if (scoresError) throw scoresError;
 
-      // Create a map of game scores by game_id
-      const scoresMap = new Map<string, GameScore>();
-      userScores?.forEach(score => {
-        scoresMap.set(score.game_id, score);
+      // Create maps for scored games and user-played games
+      const scoredGames = new Set<string>();
+      const userPlayedGames = new Set<string>();
+      
+      allScores?.forEach(score => {
+        scoredGames.add(score.game_id);
+        if (score.player_id === user.id) {
+          userPlayedGames.add(score.game_id);
+        }
       });
 
       // Process events and sort them alphabetically
@@ -76,12 +87,11 @@ export default function MyOlympicScores() {
         .map(e => {
           const event = e.event;
           if (event && event.games) {
-            // Show all games, not just the ones the user has played
             event.games = event.games
               .map(({ game }) => ({
                 ...game,
-                hasScores: scoresMap.has(game.id),
-                userScore: scoresMap.get(game.id)
+                isScored: scoredGames.has(game.id),
+                isPlayedByUser: userPlayedGames.has(game.id)
               }))
               .sort((a, b) => b.weight - a.weight);
           }
@@ -99,6 +109,28 @@ export default function MyOlympicScores() {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchGameScores = async () => {
+    if (!selectedGame || !selectedEvent) return;
+
+    try {
+      const { data: scores, error } = await supabase
+        .from('game_score')
+        .select(`
+          *,
+          player:profiles(*)
+        `)
+        .eq('olympic_id', olympicId)
+        .eq('event_id', selectedEvent)
+        .eq('game_id', selectedGame)
+        .order('score', { ascending: false });
+
+      if (error) throw error;
+      setGameScores(scores || []);
+    } catch (error: any) {
+      setError(error.message);
     }
   };
 
@@ -208,7 +240,10 @@ export default function MyOlympicScores() {
                               )}
                             >
                               {game.name}
-                              {game.hasScores && (
+                              {game.isScored && (
+                                <span className="ml-2 text-xs text-blue-600">(scored)</span>
+                              )}
+                              {game.isPlayedByUser && (
                                 <span className="ml-2 text-xs text-green-600">(played)</span>
                               )}
                             </button>
@@ -242,84 +277,106 @@ export default function MyOlympicScores() {
                     )}
                   </div>
 
-                  {currentGame.userScore ? (
-                    <div className="bg-white border rounded-lg shadow-sm">
-                      <div className="px-6 py-4 border-b border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900">Your Score</h3>
-                      </div>
-                      <div className="px-6 py-4">
-                        <div className="flex items-center space-x-6">
-                          <div className="flex items-center">
-                            {user?.avatar_url ? (
-                              <img
-                                className="h-10 w-10 rounded-full"
-                                src={user.avatar_url}
-                                alt=""
-                              />
-                            ) : (
-                              <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <User className="h-5 w-5 text-indigo-600" />
-                              </div>
-                            )}
-                            <div className="ml-3">
-                              <div className="font-medium text-gray-900">
-                                {user?.full_name || user?.username}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-6">
-                            <div>
-                              <div className="text-sm text-gray-500">Score</div>
-                              <div className="text-lg font-semibold text-gray-900">
-                                {currentGame.userScore.score}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-sm text-gray-500">Points</div>
-                              <div className="text-lg font-semibold text-gray-900">
-                                {currentGame.userScore.points}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-sm text-gray-500">Medal</div>
-                              <div className="flex items-center">
-                                {getMedalDisplay(currentGame.userScore.medal)}
-                                {currentGame.userScore.medal && (
-                                  <span className="ml-2 text-sm font-medium text-gray-900 capitalize">
-                                    {currentGame.userScore.medal}
-                                  </span>
-                                )}
-                                {!currentGame.userScore.medal && (
-                                  <span className="text-sm text-gray-500">None</span>
-                                )}
-                              </div>
-                            </div>
-                            {currentGame.userScore.time_to_play && (
-                              <div>
-                                <div className="text-sm text-gray-500">Time Played</div>
-                                <div className="flex items-center text-lg font-semibold text-gray-900">
-                                  <Clock className="h-4 w-4 mr-1" />
-                                  {currentGame.userScore.time_to_play} min
+                  {gameScores.length > 0 ? (
+                    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-300">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                              Player
+                            </th>
+                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              Score
+                            </th>
+                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              Points
+                            </th>
+                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              Medal
+                            </th>
+                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              Time
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 bg-white">
+                          {gameScores.map((score) => (
+                            <tr 
+                              key={score.id}
+                              className={score.player_id === user?.id ? 'bg-indigo-50' : ''}
+                            >
+                              <td className="py-4 pl-4 pr-3 text-sm">
+                                <div className="flex items-center">
+                                  <div className="h-10 w-10 flex-shrink-0">
+                                    {score.player?.avatar_url ? (
+                                      <img
+                                        className="h-10 w-10 rounded-full"
+                                        src={score.player.avatar_url}
+                                        alt=""
+                                      />
+                                    ) : (
+                                      <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                        <User className="h-5 w-5 text-indigo-600" />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="ml-4">
+                                    <div className="font-medium text-gray-900">
+                                      {score.player?.full_name || score.player?.username}
+                                      {score.player_id === user?.id && (
+                                        <span className="ml-2 text-xs text-indigo-600 font-normal">(You)</span>
+                                      )}
+                                    </div>
+                                    {score.player?.full_name && (
+                                      <div className="text-gray-500">{score.player.username}</div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+                              </td>
+                              <td className="px-3 py-4 text-sm text-gray-900 font-medium">
+                                {score.score}
+                              </td>
+                              <td className="px-3 py-4 text-sm text-gray-900 font-medium">
+                                {score.points}
+                              </td>
+                              <td className="px-3 py-4 text-sm">
+                                <div className="flex items-center">
+                                  {getMedalDisplay(score.medal)}
+                                  {score.medal && (
+                                    <span className="ml-2 text-sm font-medium text-gray-900 capitalize">
+                                      {score.medal}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-3 py-4 text-sm text-gray-500">
+                                {score.time_to_play ? (
+                                  <div className="flex items-center">
+                                    <Clock className="h-4 w-4 mr-1" />
+                                    {score.time_to_play} min
+                                  </div>
+                                ) : (
+                                  '-'
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   ) : (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
                       <Medal className="mx-auto h-12 w-12 text-gray-400" />
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">No Score Yet</h3>
+                      <h3 className="mt-2 text-sm font-medium text-gray-900">No Scores Yet</h3>
                       <p className="mt-1 text-sm text-gray-500">
-                        You haven't played this game in this olympic yet.
+                        This game hasn't been scored in this olympic yet.
                       </p>
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="text-center py-12 text-gray-500">
-                  Select an event and game from the sidebar to view your scores
+                  Select an event and game from the sidebar to view scores
                 </div>
               )}
             </div>
