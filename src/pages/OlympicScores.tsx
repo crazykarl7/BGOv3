@@ -487,7 +487,7 @@ export default function OlympicScores() {
                   </div>
 
                   {user?.is_admin && (
-                    <div className="mb-4 flex items-center">
+                  {/*}    <div className="mb-4 flex items-center">
                       <label className="flex items-center space-x-2">
                         <input
                           type="checkbox"
@@ -497,7 +497,7 @@ export default function OlympicScores() {
                         />
                         <span className="text-sm font-medium text-gray-700">Override Medals</span>
                       </label>
-                    </div>
+                    </div> */}
                   )}
 
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
