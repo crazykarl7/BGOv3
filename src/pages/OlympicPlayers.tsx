@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Profile, Olympic, OlympicPlayer } from '../types/database';
-import { Users, ArrowLeft, LogOut, Search, Check, X, DollarSign } from 'lucide-react';
+import { Users, ArrowLeft, LogOut, Search, Check, X, DollarSign, UserCheck, UserX } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function OlympicPlayers() {
@@ -15,6 +15,7 @@ export default function OlympicPlayers() {
   const [searchQuery, setSearchQuery] = useState('');
   const [saving, setSaving] = useState(false);
   const [playerPayments, setPlayerPayments] = useState<Record<string, boolean>>({});
+  const [playerPresence, setPlayerPresence] = useState<Record<string, boolean>>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,12 +45,14 @@ export default function OlympicPlayers() {
       // Extract players and set up selected players and payments
       const selectedIds = new Set();
       const payments: Record<string, boolean> = {};
+      const presence: Record<string, boolean> = {};
       const playersList: Profile[] = [];
 
       olympicPlayersResponse.data.forEach((op) => {
         if (op.player) {
           selectedIds.add(op.player_id);
           payments[op.player_id] = op.paid;
+          presence[op.player_id] = op.player.is_present || false;
           playersList.push(op.player);
         }
       });
@@ -57,6 +60,7 @@ export default function OlympicPlayers() {
       setPlayers(playersList);
       setSelectedPlayers(selectedIds);
       setPlayerPayments(payments);
+      setPlayerPresence(presence);
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -138,7 +142,15 @@ export default function OlympicPlayers() {
           if (playerError) throw playerError;
           if (playerData) {
             setPlayers([...players, playerData]);
-          }
+          
+          // Initialize presence for new players
+          const newPresence = { ...playerPresence };
+          newPlayers.forEach(player => {
+            newPresence[player.id] = player.is_present || false;
+          });
+          
+          setPlayers([...players, ...newPlayers]);
+          setPlayerPresence(newPresence);
         }
       }
     } catch (error: any) {
@@ -192,6 +204,52 @@ export default function OlympicPlayers() {
       }));
     } catch (error: any) {
       console.error('Debug - Payment Operation Error:', {
+        error: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        timestamp: new Date().toISOString()
+      });
+      setError(error.message);
+    }
+  };
+
+  const togglePresence = async (playerId: string) => {
+    try {
+      const newPresenceStatus = !playerPresence[playerId];
+
+      // Get current session to verify auth status
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      console.log('Debug - Presence Update:', {
+        userId: session?.user?.id,
+        playerId,
+        newPresenceStatus,
+        timestamp: new Date().toISOString()
+      });
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_present: newPresenceStatus })
+        .eq('id', playerId);
+
+      if (error) {
+        console.error('Debug - Presence Update Error:', {
+          error,
+          playerId,
+          newPresenceStatus,
+          timestamp: new Date().toISOString()
+        });
+        throw error;
+      }
+
+      setPlayerPresence(prev => ({
+        ...prev,
+        [playerId]: newPresenceStatus
+      }));
+    } catch (error: any) {
+      console.error('Debug - Presence Operation Error:', {
         error: error.message,
         details: error.details,
         hint: error.hint,
@@ -313,6 +371,9 @@ export default function OlympicPlayers() {
                       Email
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
+                      Presence
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
                       Payment Status
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
@@ -357,6 +418,32 @@ export default function OlympicPlayers() {
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500">
                         {player.username}
+                      </td>
+                      <td className="px-3 py-4 text-sm text-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            togglePresence(player.id);
+                          }}
+                          className={clsx(
+                            'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                            playerPresence[player.id]
+                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                          )}
+                        >
+                          {playerPresence[player.id] ? (
+                            <>
+                              <UserCheck className="h-4 w-4 mr-1" />
+                              Present
+                            </>
+                          ) : (
+                            <>
+                              <UserX className="h-4 w-4 mr-1" />
+                              Not Present
+                            </>
+                          )}
+                        </button>
                       </td>
                       <td className="px-3 py-4 text-sm text-center">
                         {selectedPlayers.has(player.id) && (
