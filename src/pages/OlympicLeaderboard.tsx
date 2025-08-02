@@ -394,7 +394,6 @@ export default function OlympicLeaderboard() {
                                 <img
                                   className="h-10 w-10 rounded-full"
                                   src={entry.player.avatar_url}
-                                  alt=""
                                 />
                               ) : (
                                 <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -413,14 +412,14 @@ export default function OlympicLeaderboard() {
                           </div>
                         )}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <div className="text-gray-900 font-medium">{entry.total_points}</div>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                        {entry.total_points}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                        {entry.total_games}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <div className="text-gray-900">{entry.total_games}</div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <div className="flex items-center justify-center space-x-2 sm:space-x-4">
+                        <div className="flex items-center justify-center flex-wrap gap-1">
                           <div className="flex items-center">
                             <Medal className="h-5 w-5 text-yellow-500 mr-1" />
                             <span>{entry.medals.gold}</span>

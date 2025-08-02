@@ -304,18 +304,18 @@ export default function UserHome() {
                         <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
                           Olympic
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                           Date
                         </th>
-                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                        <th scope="col" className="hidden sm:table-cell relative py-3.5 pl-3 pr-4 sm:pr-6">
                           <span className="sr-only">Actions</span>
                         </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {registeredOlympics.map((olympic) => (
-                        <tr key={olympic.id}>
-                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
+                        <tr key={olympic.id} className="block sm:table-row border-b border-gray-200 sm:border-none">
+                          <td className="block sm:table-cell py-4 pl-4 pr-3 text-sm">
                             <div>
                               <div className="font-medium text-gray-900">{olympic.name}</div>
                               {olympic.description && (
@@ -331,12 +331,41 @@ export default function UserHome() {
                                 </div>
                               )}
                             </div>
+                            {/* Mobile-only content */}
+                            <div className="sm:hidden mt-3 space-y-2">
+                              <div className="text-sm text-gray-500">
+                                <span className="font-medium">Date:</span> {format(new Date(olympic.date), 'MMMM d, yyyy')}
+                              </div>
+                              <div className="flex flex-wrap justify-start gap-2 mt-2">
+                                <button
+                                  onClick={() => navigate(`/olympics/${olympic.id}/teams`)}
+                                  className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                                >
+                                  <Users className="h-5 w-5 mr-1" />
+                                  Team
+                                </button>
+                                <button
+                                  onClick={() => navigate(`/olympics/${olympic.id}/my-scores`)}
+                                  className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                                >
+                                  <Medal className="h-5 w-5 mr-1" />
+                                  Scores
+                                </button>
+                                <button
+                                  onClick={() => navigate(`/olympics/${olympic.id}/leaderboard`)}
+                                  className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                                >
+                                  <Trophy className="h-5 w-5 mr-1" />
+                                  Leaderboard
+                                </button>
+                              </div>
+                            </div>
                           </td>
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             {format(new Date(olympic.date), 'MMMM d, yyyy')}
                           </td>
-                          <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
-                            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+                          <td className="hidden sm:table-cell py-4 pl-3 pr-4 text-right text-sm font-medium">
+                            <div className="flex flex-wrap justify-end gap-2">
                               <button
                                 onClick={() => navigate(`/olympics/${olympic.id}/teams`)}
                                 className="text-indigo-600 hover:text-indigo-900 flex items-center"
