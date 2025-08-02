@@ -6,6 +6,7 @@ export interface Profile {
   is_admin: boolean;
   created_at: string;
   updated_at: string;
+  is_present: boolean | null;
 }
 
 export interface Game {
