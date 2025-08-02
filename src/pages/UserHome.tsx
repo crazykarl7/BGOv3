@@ -285,19 +285,19 @@ export default function UserHome() {
                                 <Users className="h-5 w-5 mr-1" />
                                 Team
                               </button>
-                              <button
+                              {/*} <button
                                 onClick={() => navigate(`/olympics/${olympic.id}/scores`)}
                                 className="text-indigo-600 hover:text-indigo-900 flex items-center"
                               >
                                 <Medal className="h-5 w-5 mr-1" />
                                 Scores
-                              </button>
+                              </button> */}
                               <button
                                 onClick={() => navigate(`/olympics/${olympic.id}/my-scores`)}
                                 className="text-indigo-600 hover:text-indigo-900 flex items-center"
                               >
                                 <Medal className="h-5 w-5 mr-1" />
-                                My Scores
+                                Scores
                               </button>
                               <button
                                 onClick={() => navigate(`/olympics/${olympic.id}/leaderboard`)}
