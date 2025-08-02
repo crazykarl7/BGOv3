@@ -258,10 +258,10 @@ export default function PlayerOrder() {
 
   const getTierName = (tier: number) => {
     switch (tier) {
-      case 1: return 'Tier 1 (Gold)';
-      case 2: return 'Tier 2 (Silver)';
-      case 3: return 'Tier 3 (Bronze)';
-      case 4: return 'Tier 4 (New/Low)';
+      case 1: return 'Tier 1';
+      case 2: return 'Tier 2';
+      case 3: return 'Tier 3';
+      case 4: return 'Tier 4';
       default: return `Tier ${tier}`;
     }
   };
