@@ -14,6 +14,7 @@ import OlympicLeaderboard from './pages/OlympicLeaderboard';
 import UsersList from './pages/UsersList';
 import TeamAdmin from './pages/TeamAdmin';
 import MyOlympicScores from './pages/MyOlympicScores';
+import PlayerOrder from './pages/PlayerOrder';
 import { useAuthStore } from './store/authStore';
 
 function PrivateRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
@@ -89,6 +90,14 @@ function App() {
             element={
               <PrivateRoute adminOnly>
                 <OlympicScores />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/olympics/:olympicId/player-order"
+            element={
+              <PrivateRoute adminOnly>
+                <PlayerOrder />
               </PrivateRoute>
             }
           />
