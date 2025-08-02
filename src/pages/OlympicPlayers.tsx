@@ -142,9 +142,11 @@ export default function OlympicPlayers() {
           if (playerError) throw playerError;
           if (playerData) {
             setPlayers([...players, playerData]);
+          }
           
           // Initialize presence for new players
           const newPresence = { ...playerPresence };
+          const newPlayers = [playerData];
           newPlayers.forEach(player => {
             newPresence[player.id] = player.is_present || false;
           });
