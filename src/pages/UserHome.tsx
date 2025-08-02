@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import { Olympic } from '../types/database';
-import { Trophy, Medal, User, LogOut, Calendar, ChevronRight, Users } from 'lucide-react';
+import { Trophy, Medal, User, LogOut, Calendar, ChevronRight, Users, Play, Pause } from 'lucide-react';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 
@@ -56,12 +56,25 @@ export default function UserHome() {
   const [error, setError] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
   const [selectedOlympic, setSelectedOlympic] = useState<Olympic | null>(null);
+  const [playerIsPresent, setPlayerIsPresent] = useState<boolean>(false);
+  const [updatingPresence, setUpdatingPresence] = useState(false);
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     fetchOlympics();
+    // Initialize player presence status from user data
+    if (user?.is_present !== undefined && user?.is_present !== null) {
+      setPlayerIsPresent(user.is_present);
+    }
   }, []);
+
+  useEffect(() => {
+    // Update local state when user data changes
+    if (user?.is_present !== undefined && user?.is_present !== null) {
+      setPlayerIsPresent(user.is_present);
+    }
+  }, [user?.is_present]);
 
   const fetchOlympics = async () => {
     try {
@@ -123,6 +136,32 @@ export default function UserHome() {
       setError(error.message);
     } finally {
       setRegistering(false);
+    }
+  };
+
+  const handleTogglePresence = async () => {
+    if (!user) return;
+    
+    setUpdatingPresence(true);
+    const newPresenceStatus = !playerIsPresent;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_present: newPresenceStatus })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setPlayerIsPresent(newPresenceStatus);
+      
+      // Update the user in the auth store
+      const updatedUser = { ...user, is_present: newPresenceStatus };
+      useAuthStore.getState().setUser(updatedUser);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setUpdatingPresence(false);
     }
   };
 
@@ -191,6 +230,26 @@ export default function UserHome() {
                 <h1 className="text-xl font-semibold text-white">Olympics</h1>
               </div>
               <div className="flex items-center space-x-4">
+                <button
+                  onClick={handleTogglePresence}
+                  disabled={updatingPresence}
+                  className={clsx(
+                    'flex items-center text-white hover:text-indigo-100 transition-colors',
+                    updatingPresence && 'opacity-50 cursor-not-allowed'
+                  )}
+                >
+                  {playerIsPresent ? (
+                    <>
+                      <Play className="h-5 w-5 mr-2" />
+                      Play
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="h-5 w-5 mr-2" />
+                      Pause
+                    </>
+                  )}
+                </button>
                 <button
                   onClick={() => navigate(`/profile/${user?.id}`)}
                   className="text-white hover:text-indigo-100 flex items-center"
