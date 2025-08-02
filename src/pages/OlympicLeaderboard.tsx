@@ -420,7 +420,7 @@ export default function OlympicLeaderboard() {
                         <div className="text-gray-900">{entry.total_games}</div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <div className="flex items-center justify-center space-x-2 sm:space-x-4">
+                        <div className="flex items-center justify-center flex-wrap gap-1">
                           <div className="flex items-center">
                             <Medal className="h-5 w-5 text-yellow-500 mr-1" />
                             <span>{entry.medals.gold}</span>

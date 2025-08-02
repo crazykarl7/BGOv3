@@ -336,7 +336,7 @@ export default function UserHome() {
                             {format(new Date(olympic.date), 'MMMM d, yyyy')}
                           </td>
                           <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
-                            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+                            <div className="flex flex-wrap justify-end gap-2">
                               <button
                                 onClick={() => navigate(`/olympics/${olympic.id}/teams`)}
                                 className="text-indigo-600 hover:text-indigo-900 flex items-center"

@@ -302,7 +302,7 @@ export default function OlympicAdmin() {
                         {format(new Date(olympic.registration_deadline), 'MMMM d, yyyy')}
                       </td>
                       <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
-                        <div className="flex flex-wrap justify-end gap-2">
+                        <div className="flex flex-wrap justify-end gap-1">
                           <button
                             onClick={() => navigate(`/admin/olympics/${olympic.id}/players`)}
                             className="text-indigo-600 hover:text-indigo-900"
