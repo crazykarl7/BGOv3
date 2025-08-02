@@ -13,6 +13,7 @@ import OlympicScores from './pages/OlympicScores';
 import OlympicLeaderboard from './pages/OlympicLeaderboard';
 import UsersList from './pages/UsersList';
 import TeamAdmin from './pages/TeamAdmin';
+import MyOlympicScores from './pages/MyOlympicScores';
 import { useAuthStore } from './store/authStore';
 
 function PrivateRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
@@ -122,6 +123,14 @@ function App() {
             element={
               <PrivateRoute>
                 <OlympicScores />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/olympics/:olympicId/my-scores"
+            element={
+              <PrivateRoute>
+                <MyOlympicScores />
               </PrivateRoute>
             }
           />
