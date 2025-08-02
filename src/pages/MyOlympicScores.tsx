@@ -76,6 +76,7 @@ export default function MyOlympicScores() {
         .map(e => {
           const event = e.event;
           if (event && event.games) {
+            // Show all games, not just the ones the user has played
             event.games = event.games
               .map(({ game }) => ({
                 ...game,
