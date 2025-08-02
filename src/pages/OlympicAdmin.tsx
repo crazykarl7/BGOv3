@@ -272,21 +272,21 @@ export default function OlympicAdmin() {
                     <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
                       Name
                     </th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Date
                     </th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Registration Deadline
                     </th>
-                    <th className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                    <th className="hidden sm:table-cell relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {olympics.map((olympic) => (
-                    <tr key={olympic.id}>
-                      <td className="py-4 pl-4 pr-3 text-sm">
+                    <tr key={olympic.id} className="block sm:table-row border-b border-gray-200 sm:border-none">
+                      <td className="block sm:table-cell py-4 pl-4 pr-3 text-sm">
                         <div className="font-medium text-gray-900">{olympic.name}</div>
                         {olympic.description && (
                           <div
@@ -294,14 +294,67 @@ export default function OlympicAdmin() {
                             dangerouslySetInnerHTML={{ __html: olympic.description }}
                           />
                         )}
+                        {/* Mobile-only content */}
+                        <div className="sm:hidden mt-3 space-y-2">
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Date:</span> {format(new Date(olympic.date), 'MMMM d, yyyy')}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Registration Deadline:</span> {format(new Date(olympic.registration_deadline), 'MMMM d, yyyy')}
+                          </div>
+                          <div className="flex flex-wrap justify-start gap-1 mt-2">
+                            <button
+                              onClick={() => navigate(`/admin/olympics/${olympic.id}/players`)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                              title="Manage Players"
+                            >
+                              <Medal className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => navigate(`/admin/olympics/${olympic.id}/events`)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                              title="Manage Categories"
+                            >
+                              <ListChecks className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => navigate(`/admin/olympics/${olympic.id}/scores`)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                              title="Enter Scores"
+                            >
+                              <Calendar className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => navigate(`/olympics/${olympic.id}/leaderboard`)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                              title="View Leaderboard"
+                            >
+                              <Trophy className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleEdit(olympic)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                              title="Edit"
+                            >
+                              <Edit className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(olympic.id)}
+                              className="text-red-600 hover:text-red-900"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden sm:table-cell px-3 py-4 text-sm text-gray-500">
                         {format(new Date(olympic.date), 'MMMM d, yyyy')}
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden sm:table-cell px-3 py-4 text-sm text-gray-500">
                         {format(new Date(olympic.registration_deadline), 'MMMM d, yyyy')}
                       </td>
-                      <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
+                      <td className="hidden sm:table-cell py-4 pl-3 pr-4 text-right text-sm font-medium">
                         <div className="flex flex-wrap justify-end gap-1">
                           <button
                             onClick={() => navigate(`/admin/olympics/${olympic.id}/players`)}

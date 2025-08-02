@@ -376,7 +376,7 @@ export default function OlympicLeaderboard() {
                             #{index + 1}
                           </span>
                         </div>
-                      </td>
+                          <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center">
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                         {showTeamLeaderboard ? (
                           <div className="flex items-center">
@@ -394,7 +394,7 @@ export default function OlympicLeaderboard() {
                                 <img
                                   className="h-10 w-10 rounded-full"
                                   src={entry.player.avatar_url}
-                                  alt=""
+                          <td className="px-3 py-4 text-sm text-gray-900">
                                 />
                               ) : (
                                 <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -411,10 +411,10 @@ export default function OlympicLeaderboard() {
                               )}
                             </div>
                           </div>
-                        )}
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-center">
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <div className="text-gray-900 font-medium">{entry.total_points}</div>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-center">
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
                         <div className="text-gray-900">{entry.total_games}</div>
