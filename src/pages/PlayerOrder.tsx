@@ -248,10 +248,10 @@ export default function PlayerOrder() {
 
   const getTierColor = (tier: number) => {
     switch (tier) {
-      case 1: return 'bg-yellow-100 text-yellow-800';
+      case 1: return 'bg-gray-100 text-gray-800';
       case 2: return 'bg-gray-100 text-gray-800';
-      case 3: return 'bg-amber-100 text-amber-800';
-      case 4: return 'bg-red-100 text-red-800';
+      case 3: return 'bg-gray-100 text-gray-800';
+      case 4: return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
