@@ -825,35 +825,36 @@ function GameAdmin() {
                     <h3 className="text-lg font-medium mb-4">
                       {editing.item.id ? 'Edit Event' : 'Add New Category'}
                     </h3>
-                
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <input
-                          type="text"
-                          value={editing.item.name || ''}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              item: { ...editing.item, name: e.target.value },
-                            })
-                          }
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea
-                          value={editing.item.description || ''}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              item: { ...editing.item, description: e.target.value },
-                            })
-                          }
-                          rows={3}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
+                    <form onSubmit={handleEventSubmit} className="space-y-4">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Name</label>
+                          <input
+                            type="text"
+                            value={editing.item.name || ''}
+                            onChange={(e) =>
+                              setEditing({
+                                ...editing,
+                                item: { ...editing.item, name: e.target.value },
+                              })
+                            }
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Description</label>
+                          <textarea
+                            value={editing.item.description || ''}
+                            onChange={(e) =>
+                              setEditing({
+                                ...editing,
+                                item: { ...editing.item, description: e.target.value },
+                              })
+                            }
+                            rows={3}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          />
+                        </div>
                       </div>
                       <div className="flex justify-end space-x-3">
                         <button
@@ -892,7 +893,6 @@ function GameAdmin() {
                         </div>
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center">
-                      <div className="md:col-span-2">
                             <span className="text-sm text-gray-500">
                               {event.games?.length || 0} games
                             </span>
@@ -1079,17 +1079,17 @@ function GameAdmin() {
                   </span>
                 </label>
               </div>
-                    <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+              {importing && (
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
                     <span>Importing games...</span>
-                        className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    <span>
                       {importProgress.current} / {importProgress.total}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                        className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                      className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
                       style={{
                         width: `${(importProgress.current / importProgress.total) * 100}%`,
                       }}
@@ -1123,8 +1123,6 @@ function GameAdmin() {
                     'Import'
                   )}
                 </button>
-              <div className="overflow-x-auto">
-                {renderGamesTable()}
               </div>
             </div>
           </div>
