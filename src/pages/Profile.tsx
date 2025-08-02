@@ -255,7 +255,7 @@ export default function Profile() {
                 />
               </div>
 
-              <div>
+              {/*}  <div>
                 <label className="block text-sm font-medium text-gray-700">Avatar URL</label>
                 <input
                   type="url"
@@ -263,7 +263,7 @@ export default function Profile() {
                   onChange={(e) => setAvatarUrl(e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
-              </div>
+              </div> */}
 
               <div className="flex justify-end">
                 <button
