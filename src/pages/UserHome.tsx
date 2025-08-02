@@ -279,7 +279,7 @@ export default function UserHome() {
             {availableOlympics.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Available Olympics</h2>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {availableOlympics.map((olympic) => renderOlympicCard(olympic))}
                 </div>
               </div>
@@ -297,7 +297,7 @@ export default function UserHome() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
                   <table className="min-w-full divide-y divide-gray-300">
                     <thead className="bg-gray-50">
                       <tr>
@@ -336,7 +336,7 @@ export default function UserHome() {
                             {format(new Date(olympic.date), 'MMMM d, yyyy')}
                           </td>
                           <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
-                            <div className="flex justify-end space-x-3">
+                            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                               <button
                                 onClick={() => navigate(`/olympics/${olympic.id}/teams`)}
                                 className="text-indigo-600 hover:text-indigo-900 flex items-center"

@@ -825,47 +825,48 @@ function GameAdmin() {
                     <h3 className="text-lg font-medium mb-4">
                       {editing.item.id ? 'Edit Event' : 'Add New Category'}
                     </h3>
-                
                     <form onSubmit={handleEventSubmit} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <input
-                          type="text"
-                          value={editing.item.name || ''}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              item: { ...editing.item, name: e.target.value },
-                            })
-                          }
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea
-                          value={editing.item.description || ''}
-                          onChange={(e) =>
-                            setEditing({
-                              ...editing,
-                              item: { ...editing.item, description: e.target.value },
-                            })
-                          }
-                          rows={3}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Name</label>
+                          <input
+                            type="text"
+                            value={editing.item.name || ''}
+                            onChange={(e) =>
+                              setEditing({
+                                ...editing,
+                                item: { ...editing.item, name: e.target.value },
+                              })
+                            }
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Description</label>
+                          <textarea
+                            value={editing.item.description || ''}
+                            onChange={(e) =>
+                              setEditing({
+                                ...editing,
+                                item: { ...editing.item, description: e.target.value },
+                              })
+                            }
+                            rows={3}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          />
+                        </div>
                       </div>
                       <div className="flex justify-end space-x-3">
                         <button
                           type="button"
                           onClick={() => setEditing(null)}
-                          className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
-                          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                          className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                         >
                           {editing.item.id ? 'Update' : 'Create'}
                         </button>
@@ -892,7 +893,6 @@ function GameAdmin() {
                         </div>
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center">
-                            <ListChecks className="h-5 w-5 text-gray-400 mr-2" />
                             <span className="text-sm text-gray-500">
                               {event.games?.length || 0} games
                             </span>
@@ -942,14 +942,19 @@ function GameAdmin() {
                               <button
                                 onClick={(e) => toggleShowAllGames(event.id, e)}
                                 className={clsx(
-                                  'ml-4 flex items-center px-3 py-2 rounded-md text-sm font-medium',
+                                  'ml-2 sm:ml-4 flex items-center px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap',
                                   showAllGames.has(event.id)
                                     ? 'bg-indigo-100 text-indigo-700'
                                     : 'bg-gray-100 text-gray-700'
                                 )}
                               >
                                 <Filter className="h-4 w-4 mr-2" />
-                                {showAllGames.has(event.id) ? 'Showing All Games' : 'Showing Category Games'}
+                                <span className="hidden sm:inline">
+                                  {showAllGames.has(event.id) ? 'Showing All Games' : 'Showing Category Games'}
+                                </span>
+                                <span className="sm:hidden">
+                                  {showAllGames.has(event.id) ? 'All' : 'Category'}
+                                </span>
                               </button>
                             </div>
                           </div>
@@ -960,7 +965,7 @@ function GameAdmin() {
                               return (
                                 <div
                                   key={game.id}
-                                  className="flex items-center justify-between py-2"
+                                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 space-y-2 sm:space-y-0"
                                 >
                                   <div>
                                     <div className="font-medium text-gray-900">{game.name}</div>
@@ -977,7 +982,7 @@ function GameAdmin() {
                                       handleGameAssignment(event.id, game.id, !isAssigned)
                                     }
                                     className={clsx(
-                                      'px-3 py-1 rounded-md text-sm font-medium',
+                                      'px-3 py-1 rounded-md text-sm font-medium whitespace-nowrap',
                                       isAssigned
                                         ? 'bg-red-100 text-red-700 hover:bg-red-200'
                                         : 'bg-green-100 text-green-700 hover:bg-green-200'
@@ -1074,7 +1079,7 @@ function GameAdmin() {
                   </span>
                 </label>
               </div>
-              {importing && importProgress.total > 0 && (
+              {importing && (
                 <div>
                   <div className="flex justify-between text-sm text-gray-600 mb-1">
                     <span>Importing games...</span>
@@ -1084,7 +1089,7 @@ function GameAdmin() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-indigo-600 h-2 rounded-full"
+                      className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
                       style={{
                         width: `${(importProgress.current / importProgress.total) * 100}%`,
                       }}

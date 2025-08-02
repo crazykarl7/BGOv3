@@ -174,7 +174,7 @@ export default function UsersList() {
             )}
 
             <div className="mb-6 flex justify-between items-center">
-              <div className="relative flex-1 max-w-sm">
+              <div className="relative flex-1 max-w-sm mb-4 sm:mb-0">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
@@ -189,7 +189,7 @@ export default function UsersList() {
               {user?.is_admin && (
                 <button
                   onClick={() => setShowNewUserForm(true)}
-                  className="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                  className="ml-0 sm:ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                 >
                   <Plus className="h-5 w-5 mr-2" />
                   Add User
@@ -201,7 +201,7 @@ export default function UsersList() {
               <div className="mb-6 bg-gray-50 p-6 rounded-lg">
                 <h2 className="text-lg font-medium mb-4">Create New User</h2>
                 <form onSubmit={handleCreateUser} className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Email</label>
                       <input
@@ -232,7 +232,7 @@ export default function UsersList() {
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center md:col-span-1">
                       <input
                         type="checkbox"
                         id="isAdmin"
@@ -245,18 +245,18 @@ export default function UsersList() {
                       </label>
                     </div>
                   </div>
-                  <div className="flex justify-end space-x-3">
+                  <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                     <button
                       type="button"
                       onClick={() => setShowNewUserForm(false)}
-                      className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={creatingUser}
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+                      className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
                     >
                       {creatingUser ? 'Creating...' : 'Create User'}
                     </button>
@@ -265,7 +265,7 @@ export default function UsersList() {
               </div>
             )}
 
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
@@ -331,7 +331,7 @@ export default function UsersList() {
                         {new Date(profile.created_at).toLocaleDateString()}
                       </td>
                       <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
-                        <div className="flex justify-end space-x-3">
+                        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                           <button
                             onClick={() => navigate(`/profile/${profile.id}`)}
                             className="text-indigo-600 hover:text-indigo-900"

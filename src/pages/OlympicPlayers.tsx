@@ -342,7 +342,7 @@ export default function OlympicPlayers() {
             )}
 
             <div className="mb-6 flex justify-between items-center">
-              <div className="relative flex-1 max-w-sm">
+              <div className="relative flex-1 max-w-sm mb-4 sm:mb-0">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
@@ -356,13 +356,14 @@ export default function OlympicPlayers() {
               </div>
               <button
                 onClick={handleAddPlayer}
-                className="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                className="ml-0 sm:ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
               >
-                Show All Players
+                <span className="hidden sm:inline">Show All Players</span>
+                <span className="sm:hidden">Show All</span>
               </button>
             </div>
 
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
@@ -437,12 +438,14 @@ export default function OlympicPlayers() {
                           {playerPresence[player.id] ? (
                             <>
                               <UserCheck className="h-4 w-4 mr-1" />
-                              Present
+                              <span className="hidden sm:inline">Present</span>
+                              <span className="sm:hidden">✓</span>
                             </>
                           ) : (
                             <>
                               <UserX className="h-4 w-4 mr-1" />
-                              Not Present
+                              <span className="hidden sm:inline">Not Present</span>
+                              <span className="sm:hidden">✗</span>
                             </>
                           )}
                         </button>
@@ -462,7 +465,12 @@ export default function OlympicPlayers() {
                             )}
                           >
                             <DollarSign className="h-4 w-4 mr-1" />
-                            {playerPayments[player.id] ? 'Paid' : 'Unpaid'}
+                            <span className="hidden sm:inline">
+                              {playerPayments[player.id] ? 'Paid' : 'Unpaid'}
+                            </span>
+                            <span className="sm:hidden">
+                              {playerPayments[player.id] ? '✓' : '✗'}
+                            </span>
                           </button>
                         )}
                       </td>

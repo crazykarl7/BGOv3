@@ -413,9 +413,9 @@ export default function OlympicScores() {
             </div>
           </div>
 
-          <div className="flex min-h-[600px]">
+          <div className="flex flex-col lg:flex-row min-h-[600px]">
             {/* Left Sidebar - Event/Game Tree */}
-            <div className="w-64 border-r border-gray-200 bg-gray-50">
+            <div className="w-full lg:w-64 border-r lg:border-r border-b lg:border-b-0 border-gray-200 bg-gray-50">
               <div className="p-4">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Categories & Games</h2>
                 <div className="space-y-2">
@@ -500,7 +500,7 @@ export default function OlympicScores() {
                     </div> 
                   )} */}
 
-                  <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                  <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
                     <table className="min-w-full divide-y divide-gray-300">
                       <thead className="bg-gray-50">
                         <tr>
@@ -533,7 +533,7 @@ export default function OlympicScores() {
                                 options={getAvailablePlayerOptions(index)}
                                 isDisabled={!user?.is_admin}
                                 placeholder="Select player..."
-                                className="w-64"
+                                className="w-full sm:w-64"
                                 isClearable
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
@@ -561,7 +561,7 @@ export default function OlympicScores() {
                                   setScoreRows(newRows);
                                 }}
                                 disabled={!user?.is_admin}
-                                className="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
+                                className="w-full sm:w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
                               />
                             </td>
                             <td className="px-3 py-2">
@@ -576,7 +576,7 @@ export default function OlympicScores() {
                                   options={medalOptions}
                                   isDisabled={!user?.is_admin || !row.playerId}
                                   placeholder="Select medal..."
-                                  className="w-48"
+                                  className="w-full sm:w-48"
                                   isClearable
                                   menuPortalTarget={document.body}
                                   menuPosition="fixed"
@@ -609,7 +609,7 @@ export default function OlympicScores() {
                     </table>
                   </div>
 
-                  <div className="mt-6 flex justify-between items-center">
+                  <div className="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                     {numScoreRows < players.length && (
                       <button
                         onClick={handleAddPlayer}
@@ -620,8 +620,8 @@ export default function OlympicScores() {
                       </button>
                     )}
 
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                         <label className="text-sm font-medium text-gray-700">Time to Play:</label>
                         <div className="flex items-center">
                           <input
@@ -629,7 +629,7 @@ export default function OlympicScores() {
                             value={timeToPlay || ''}
                             onChange={(e) => setTimeToPlay(e.target.value === '' ? null : parseInt(e.target.value, 10))}
                             placeholder="Optional"
-                            className="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="w-full sm:w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             disabled={!user?.is_admin}
                           />
                           <span className="ml-2 text-sm text-gray-500">minutes</span>

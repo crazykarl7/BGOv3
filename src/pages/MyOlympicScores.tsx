@@ -201,9 +201,9 @@ export default function MyOlympicScores() {
             </div>
           </div>
 
-          <div className="flex min-h-[600px]">
+          <div className="flex flex-col lg:flex-row min-h-[600px]">
             {/* Left Sidebar - Event/Game Tree */}
-            <div className="w-64 border-r border-gray-200 bg-gray-50">
+            <div className="w-full lg:w-64 border-r lg:border-r border-b lg:border-b-0 border-gray-200 bg-gray-50">
               <div className="p-4">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Categories & Games</h2>
                 <div className="space-y-2">
@@ -278,7 +278,7 @@ export default function MyOlympicScores() {
                   </div>
 
                   {gameScores.length > 0 ? (
-                    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
                       <table className="min-w-full divide-y divide-gray-300">
                         <thead className="bg-gray-50">
                           <tr>
