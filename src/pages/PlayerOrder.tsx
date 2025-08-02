@@ -186,19 +186,11 @@ export default function PlayerOrder() {
         throw new Error('No players are marked as present');
       }
 
-      let playersWithTiers: { player: PlayerWithPresence; tier: number }[] = [];
+      // Step 1: Prepare players with initial tiers for weighted shuffle
+      let playersWithInitialTiers: { player: PlayerWithPresence; tier: number }[] = [];
 
-      if (!olympic?.last_generated_player_list) {
-        // First time generation - randomly assign to 4 tiers
-        const shuffledPlayers = shuffleArray(presentPlayers);
-        const playersPerTier = Math.ceil(shuffledPlayers.length / 4);
-        
-        playersWithTiers = shuffledPlayers.map((player, index) => ({
-          player,
-          tier: Math.min(Math.floor(index / playersPerTier) + 1, 4)
-        }));
-      } else {
-        // Parse existing order
+      if (olympic?.last_generated_player_list) {
+        // Parse existing order to get previous tiers
         const existingOrder: GeneratedPlayerList = JSON.parse(olympic.last_generated_player_list);
         const existingPlayerMap = new Map<string, number>();
         
@@ -206,19 +198,32 @@ export default function PlayerOrder() {
           existingPlayerMap.set(p.id, p.tier);
         });
 
-        // Assign tiers based on previous generation
-        playersWithTiers = presentPlayers.map(player => ({
+        // Assign tiers: existing players keep their tier, new players get tier 4
+        playersWithInitialTiers = presentPlayers.map(player => ({
           player,
           tier: existingPlayerMap.get(player.id) || 4 // New players get tier 4
         }));
+      } else {
+        // First time generation - all players start as tier 4
+        playersWithInitialTiers = presentPlayers.map(player => ({
+          player,
+          tier: 4
+        }));
       }
 
-      // Generate weighted order
-      const orderedPlayers = generateWeightedOrder(playersWithTiers);
+      // Step 2: Generate weighted random order based on initial tiers
+      const orderedPlayersFromWeightedShuffle = generateWeightedOrder(playersWithInitialTiers);
 
-      // Create the new generated list
+      // Step 3: Determine NEW tiers from the newly generated list
+      const playersPerTier = Math.ceil(orderedPlayersFromWeightedShuffle.length / 4);
+      const finalOrderedPlayersWithNewTiers = orderedPlayersFromWeightedShuffle.map((item, index) => ({
+        player: item.player,
+        tier: Math.min(Math.floor(index / playersPerTier) + 1, 4)
+      }));
+
+      // Step 4: Create the new generated list with newly assigned tiers
       const newGeneratedList: GeneratedPlayerList = {
-        players: orderedPlayers.map(({ player, tier }) => ({
+        players: finalOrderedPlayersWithNewTiers.map(({ player, tier }) => ({
           id: player.id,
           tier
         })),
