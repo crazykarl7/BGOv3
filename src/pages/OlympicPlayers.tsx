@@ -385,9 +385,8 @@ export default function OlympicPlayers() {
                   {filteredPlayers.map((player) => (
                     <tr
                       key={player.id}
-                      onClick={() => togglePlayer(player.id)}
                       className={clsx(
-                        'block sm:table-row border-b border-gray-200 sm:border-none cursor-pointer hover:bg-gray-50',
+                        'block sm:table-row border-b border-gray-200 sm:border-none',
                         selectedPlayers.has(player.id) && 'bg-indigo-50'
                       )}
                     >
@@ -463,11 +462,19 @@ export default function OlympicPlayers() {
                           )}
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-700">Registered:</span>
-                            {selectedPlayers.has(player.id) ? (
-                              <Check className="h-4 w-4 text-green-600" />
-                            ) : (
-                              <X className="h-4 w-4 text-gray-400" />
-                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                togglePlayer(player.id);
+                              }}
+                              className="inline-flex items-center justify-center p-1 rounded-full hover:bg-gray-100"
+                            >
+                              {selectedPlayers.has(player.id) ? (
+                                <Check className="h-4 w-4 text-green-600" />
+                              ) : (
+                                <X className="h-4 w-4 text-gray-400" />
+                              )}
+                            </button>
                           </div>
                         </div>
                       </td>
@@ -524,11 +531,19 @@ export default function OlympicPlayers() {
                         )}
                       </td>
                       <td className="hidden sm:table-cell px-3 py-4 text-sm text-center">
-                        {selectedPlayers.has(player.id) ? (
-                          <Check className="h-5 w-5 text-green-600 mx-auto" />
-                        ) : (
-                          <X className="h-5 w-5 text-gray-400 mx-auto" />
-                        )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            togglePlayer(player.id);
+                          }}
+                          className="inline-flex items-center justify-center p-1 rounded-full hover:bg-gray-100 mx-auto"
+                        >
+                          {selectedPlayers.has(player.id) ? (
+                            <Check className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <X className="h-5 w-5 text-gray-400" />
+                          )}
+                        </button>
                       </td>
                     </tr>
                   ))}
