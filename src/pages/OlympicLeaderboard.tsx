@@ -317,7 +317,7 @@ export default function OlympicLeaderboard() {
               </button>
             </div>
 
-            <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
@@ -335,19 +335,19 @@ export default function OlympicLeaderboard() {
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
                       Total Points
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
                       Games Played
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                      className="hidden sm:table-cell px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                     >
                       Medals
                     </th>
@@ -357,9 +357,12 @@ export default function OlympicLeaderboard() {
                   {currentLeaderboard.map((entry, index) => (
                     <tr
                       key={showTeamLeaderboard ? entry.id : entry.player.id}
-                      className={index < 3 ? 'bg-indigo-50 bg-opacity-50' : undefined}
+                      className={clsx(
+                        'block sm:table-row border-b border-gray-200 sm:border-none',
+                        index < 3 ? 'bg-indigo-50 bg-opacity-50' : undefined
+                      )}
                     >
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
+                      <td className="block sm:table-cell py-4 pl-4 pr-3 text-sm">
                         <div className="flex items-center">
                           <span
                             className={clsx(
@@ -377,7 +380,7 @@ export default function OlympicLeaderboard() {
                           </span>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                      <td className="block sm:table-cell px-3 py-4 text-sm text-gray-900">
                         {showTeamLeaderboard ? (
                           <div className="flex items-center">
                             <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -411,14 +414,40 @@ export default function OlympicLeaderboard() {
                             </div>
                           </div>
                         )}
+                        {/* Mobile-only content */}
+                        <div className="sm:hidden mt-3 space-y-2">
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Points:</span> {entry.total_points}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Games:</span> {entry.total_games}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Medals:</span>
+                            <div className="flex items-center mt-1 space-x-2">
+                              <div className="flex items-center">
+                                <Medal className="h-4 w-4 text-yellow-500 mr-1" />
+                                <span>{entry.medals.gold}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Medal className="h-4 w-4 text-gray-400 mr-1" />
+                                <span>{entry.medals.silver}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <Medal className="h-4 w-4 text-amber-600 mr-1" />
+                                <span>{entry.medals.bronze}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                         {entry.total_points}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                         {entry.total_games}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm">
                         <div className="flex items-center justify-center flex-wrap gap-1">
                           <div className="flex items-center">
                             <Medal className="h-5 w-5 text-yellow-500 mr-1" />

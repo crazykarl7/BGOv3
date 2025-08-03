@@ -18,6 +18,7 @@ import {
   Grid2x2,
   ChevronRight,
   Filter,
+  ArrowUpDown,
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -81,6 +82,7 @@ function GameAdmin() {
   const [activeTab, setActiveTab] = useState<Tab>('games');
   const [showAllGames, setShowAllGames] = useState<Set<string>>(new Set());
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [gameSortOrder, setGameSortOrder] = useState<'name_asc' | 'weight_asc'>('weight_asc');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -467,10 +469,19 @@ function GameAdmin() {
 
   const filteredGames = (eventId: string, eventGames: Game[] = []) => {
     const baseGames = showAllGames.has(eventId) ? games : eventGames;
-    return baseGames.filter(game => 
+    const filtered = baseGames.filter(game => 
       game.name.toLowerCase().includes(gameSearchQuery.toLowerCase()) ||
       (game.description && game.description.toLowerCase().includes(gameSearchQuery.toLowerCase()))
     );
+    
+    // Apply sorting
+    return filtered.sort((a, b) => {
+      if (gameSortOrder === 'name_asc') {
+        return a.name.localeCompare(b.name);
+      } else {
+        return a.weight - b.weight;
+      }
+    });
   };
 
   const toggleShowAllGames = (eventId: string, e: React.MouseEvent) => {
@@ -526,7 +537,20 @@ function GameAdmin() {
           {games.map((game) => (
             <tr key={game.id}>
               <td className="py-4 pl-4 pr-3 text-sm">
-                <div className="font-medium text-gray-900">{game.name}</div>
+                <div className="font-medium text-gray-900">
+                  {game.bgg_id ? (
+                    <a
+                      href={`https://boardgamegeek.com/boardgame/${game.bgg_id}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:text-indigo-900 hover:underline"
+                    >
+                      {game.name}
+                    </a>
+                  ) : (
+                    game.name
+                  )}
+                </div>
                 {renderGameDescription(game)}
               </td>
               <td className="px-3 py-4 text-sm text-gray-500">
@@ -927,9 +951,9 @@ function GameAdmin() {
 
                       {expandedEvents.has(event.id) && (
                         <div className="px-4 py-5 sm:px-6 border-t border-gray-200">
-                          <div className="mb-4 space-y-4">
-                            <div className="flex items-center justify-between">
-                              <div className="relative flex-1">
+                          <div className="mb-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+                              <div className="relative flex-1 w-full sm:w-auto">
                                 <input
                                   type="text"
                                   placeholder="Search games..."
@@ -939,23 +963,33 @@ function GameAdmin() {
                                 />
                                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                               </div>
-                              <button
-                                onClick={(e) => toggleShowAllGames(event.id, e)}
-                                className={clsx(
-                                  'ml-2 sm:ml-4 flex items-center px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap',
-                                  showAllGames.has(event.id)
-                                    ? 'bg-indigo-100 text-indigo-700'
-                                    : 'bg-gray-100 text-gray-700'
-                                )}
-                              >
-                                <Filter className="h-4 w-4 mr-2" />
-                                <span className="hidden sm:inline">
-                                  {showAllGames.has(event.id) ? 'Showing All Games' : 'Showing Category Games'}
-                                </span>
-                                <span className="sm:hidden">
-                                  {showAllGames.has(event.id) ? 'All' : 'Category'}
-                                </span>
-                              </button>
+                              <div className="flex items-center space-x-2">
+                                <select
+                                  value={gameSortOrder}
+                                  onChange={(e) => setGameSortOrder(e.target.value as 'name_asc' | 'weight_asc')}
+                                  className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                >
+                                  <option value="weight_asc">Sort by Weight (Low to High)</option>
+                                  <option value="name_asc">Sort by Name (A-Z)</option>
+                                </select>
+                                <button
+                                  onClick={(e) => toggleShowAllGames(event.id, e)}
+                                  className={clsx(
+                                    'flex items-center px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap',
+                                    showAllGames.has(event.id)
+                                      ? 'bg-indigo-100 text-indigo-700'
+                                      : 'bg-gray-100 text-gray-700'
+                                  )}
+                                >
+                                  <Filter className="h-4 w-4 mr-2" />
+                                  <span className="hidden sm:inline">
+                                    {showAllGames.has(event.id) ? 'Showing All Games' : 'Showing Category Games'}
+                                  </span>
+                                  <span className="sm:hidden">
+                                    {showAllGames.has(event.id) ? 'All' : 'Category'}
+                                  </span>
+                                </button>
+                              </div>
                             </div>
                           </div>
 

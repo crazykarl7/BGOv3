@@ -265,31 +265,31 @@ export default function UsersList() {
               </div>
             )}
 
-            <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
                       User
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Email
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Role
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Joined
                     </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                    <th scope="col" className="hidden sm:table-cell relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {filteredUsers.map((profile) => (
-                    <tr key={profile.id}>
-                      <td className="py-4 pl-4 pr-3 text-sm">
+                    <tr key={profile.id} className="block sm:table-row border-b border-gray-200 sm:border-none">
+                      <td className="block sm:table-cell py-4 pl-4 pr-3 text-sm">
                         <div className="flex items-center">
                           <div className="h-10 w-10 flex-shrink-0">
                             {profile.avatar_url ? (
@@ -308,14 +308,49 @@ export default function UsersList() {
                             <div className="font-medium text-gray-900">
                               {profile.full_name || profile.username}
                             </div>
-                            {profile.full_name && (
-                              <div className="text-gray-500">{profile.username}</div>
+                          </div>
+                        </div>
+                        {/* Mobile-only content */}
+                        <div className="sm:hidden mt-3 space-y-2">
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Email:</span> {profile.username}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Role:</span>
+                            <span
+                              className={clsx(
+                                'ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                profile.is_admin
+                                  ? 'bg-indigo-100 text-indigo-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              )}
+                            >
+                              {profile.is_admin ? 'Admin' : 'User'}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            <span className="font-medium">Joined:</span> {new Date(profile.created_at).toLocaleDateString()}
+                          </div>
+                          <div className="flex justify-start space-x-3 mt-2">
+                            <button
+                              onClick={() => navigate(`/profile/${profile.id}`)}
+                              className="text-indigo-600 hover:text-indigo-900 text-sm"
+                            >
+                              Edit
+                            </button>
+                            {user?.is_admin && profile.id !== user.id && (
+                              <button
+                                onClick={() => handleDeleteUser(profile.id)}
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
                             )}
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500">{profile.username}</td>
-                      <td className="px-3 py-4 text-sm">
+                      <td className="hidden sm:table-cell px-3 py-4 text-sm text-gray-500">{profile.username}</td>
+                      <td className="hidden sm:table-cell px-3 py-4 text-sm">
                         <span
                           className={clsx(
                             'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -327,10 +362,10 @@ export default function UsersList() {
                           {profile.is_admin ? 'Admin' : 'User'}
                         </span>
                       </td>
-                      <td className="px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden sm:table-cell px-3 py-4 text-sm text-gray-500">
                         {new Date(profile.created_at).toLocaleDateString()}
                       </td>
-                      <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
+                      <td className="hidden sm:table-cell py-4 pl-3 pr-4 text-right text-sm font-medium">
                         <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
                           <button
                             onClick={() => navigate(`/profile/${profile.id}`)}
