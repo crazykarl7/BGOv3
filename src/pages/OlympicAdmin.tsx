@@ -16,7 +16,9 @@ import {
   LogOut,
   ListChecks,
   Shuffle,
+  ChevronRight,
 } from 'lucide-react';
+import OlympicInfoModal from '../components/OlympicInfoModal';
 
 export default function OlympicAdmin() {
   const [olympics, setOlympics] = useState<Olympic[]>([]);
@@ -29,6 +31,7 @@ export default function OlympicAdmin() {
     registration_deadline: format(new Date(), 'yyyy-MM-dd'),
     description: '',
   });
+  const [selectedOlympic, setSelectedOlympic] = useState<Olympic | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -290,10 +293,19 @@ export default function OlympicAdmin() {
                       <td className="block sm:table-cell py-4 pl-4 pr-3 text-sm">
                         <div className="font-medium text-gray-900">{olympic.name}</div>
                         {olympic.description && (
-                          <div
-                            className="mt-1 text-gray-500 prose prose-sm max-w-none"
-                            dangerouslySetInnerHTML={{ __html: olympic.description }}
-                          />
+                          <div className="mt-1">
+                            <div
+                              className="text-gray-500 prose prose-sm max-w-none line-clamp-2"
+                              dangerouslySetInnerHTML={{ __html: olympic.description }}
+                            />
+                            <button
+                              onClick={() => setSelectedOlympic(olympic)}
+                              className="text-indigo-600 hover:text-indigo-700 text-sm mt-1 flex items-center"
+                            >
+                              Show More
+                              <ChevronRight className="h-4 w-4 ml-1" />
+                            </button>
+                          </div>
                         )}
                         {/* Mobile-only content */}
                         <div className="sm:hidden mt-3 space-y-2">
@@ -423,6 +435,13 @@ export default function OlympicAdmin() {
           </div>
         </div>
       </div>
+
+      {selectedOlympic && (
+        <OlympicInfoModal
+          olympic={selectedOlympic}
+          onClose={() => setSelectedOlympic(null)}
+        />
+      )}
     </div>
   );
 }
