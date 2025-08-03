@@ -234,7 +234,10 @@ export default function UserHome() {
                   onClick={handleTogglePresence}
                   disabled={updatingPresence}
                   className={clsx(
-                    'flex items-center text-white hover:text-indigo-100 transition-colors',
+                    'flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white transition-colors',
+                    playerIsPresent
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : 'bg-gray-600 hover:bg-gray-700',
                     updatingPresence && 'opacity-50 cursor-not-allowed'
                   )}
                 >
