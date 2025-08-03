@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Olympic, Profile } from '../types/database';
-import { Trophy, ArrowLeft, LogOut, Medal, User, Users } from 'lucide-react';
+import { Trophy, ArrowLeft, LogOut, Medal, User, Users, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import clsx from 'clsx';
 
@@ -296,7 +296,15 @@ export default function OlympicLeaderboard() {
               </div>
             )}
 
-            <div className="mb-6 flex justify-end">
+            <div className="mb-6 flex justify-between items-center">
+              <button
+                onClick={fetchData}
+                disabled={loading}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={clsx('h-5 w-5 mr-2', loading && 'animate-spin')} />
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
               <button
                 onClick={() => setShowTeamLeaderboard(!showTeamLeaderboard)}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
@@ -408,9 +416,6 @@ export default function OlympicLeaderboard() {
                               <div className="font-medium text-gray-900">
                                 {entry.player.full_name || entry.player.username}
                               </div>
-                              {entry.player.full_name && (
-                                <div className="text-gray-500">{entry.player.username}</div>
-                              )}
                             </div>
                           </div>
                         )}
