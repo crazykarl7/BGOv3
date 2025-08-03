@@ -526,7 +526,20 @@ function GameAdmin() {
           {games.map((game) => (
             <tr key={game.id}>
               <td className="py-4 pl-4 pr-3 text-sm">
-                <div className="font-medium text-gray-900">{game.name}</div>
+                <div className="font-medium text-gray-900">
+                  {game.bgg_id ? (
+                    <a
+                      href={`https://boardgamegeek.com/boardgame/${game.bgg_id}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:text-indigo-900 hover:underline"
+                    >
+                      {game.name}
+                    </a>
+                  ) : (
+                    game.name
+                  )}
+                </div>
                 {renderGameDescription(game)}
               </td>
               <td className="px-3 py-4 text-sm text-gray-500">
