@@ -83,7 +83,6 @@ function GameAdmin() {
   const [showAllGames, setShowAllGames] = useState<Set<string>>(new Set());
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [gameSortOrder, setGameSortOrder] = useState<'name_asc' | 'weight_asc'>('weight_asc');
-  const [showPlanningTable, setShowPlanningTable] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -494,17 +493,6 @@ function GameAdmin() {
       newShowAll.add(eventId);
     }
     setShowAllGames(newShowAll);
-  };
-
-  const togglePlanningTable = (eventId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newShowPlanning = new Set(showPlanningTable);
-    if (showPlanningTable.has(eventId)) {
-      newShowPlanning.delete(eventId);
-    } else {
-      newShowPlanning.add(eventId);
-    }
-    setShowPlanningTable(newShowPlanning);
   };
 
   const renderGameDescription = (game: Game) => {
@@ -959,16 +947,6 @@ function GameAdmin() {
                             <ChevronDown className="h-5 w-5 text-gray-400" />
                           )}
                         </div>
-                        <button
-                          onClick={(e) => togglePlanningTable(event.id, e)}
-                          className={clsx(
-                            'text-indigo-600 hover:text-indigo-900',
-                            showPlanningTable.has(event.id) && 'bg-indigo-50 rounded px-2 py-1'
-                          )}
-                          title="Planning View"
-                        >
-                          Planning
-                        </button>
                       </div>
 
                       {expandedEvents.has(event.id) && (
@@ -1054,44 +1032,6 @@ function GameAdmin() {
                       )}
                     </div>
                   ))}
-
-                  {showPlanningTable.has(event.id) && event.games && event.games.length > 0 && (
-                    <div className="border-t border-gray-200 bg-white p-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-3">Planning View</h4>
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-300">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Table
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Weight
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {event.games.map((game, index) => (
-                              <tr key={game.game.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {index + 1}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                  {game.game.name}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {game.game.weight.toFixed(2)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
