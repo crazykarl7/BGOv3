@@ -277,7 +277,29 @@ export default function UserHome() {
                 {error}
               </div>
             )}
-
+ <button
+                  onClick={handleTogglePresence}
+                  disabled={updatingPresence}
+                  className={clsx(
+                    'flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white transition-colors',
+                    playerIsPresent
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : 'bg-gray-600 hover:bg-gray-700',
+                    updatingPresence && 'opacity-50 cursor-not-allowed'
+                  )}
+                >
+                  {playerIsPresent ? (
+                    <>
+                      <Play className="h-5 w-5 mr-2" />
+                      Play
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="h-5 w-5 mr-2" />
+                      Pause
+                    </>
+                  )}
+                </button>
             {/* Available Olympics */}
             {availableOlympics.length > 0 && (
               <div className="mb-8">
