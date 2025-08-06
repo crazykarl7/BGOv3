@@ -1051,7 +1051,6 @@ function GameAdmin() {
                       )}
                     </div>
 
-                    <>
                     {showPlanningTable.has(event.id) && (
                       <div className="px-4 py-5 sm:px-6 border-t border-gray-200 bg-gray-50">
                         <h4 className="text-sm font-medium text-gray-900 mb-3">Planning Table - {event.name}</h4>
@@ -1095,7 +1094,6 @@ function GameAdmin() {
                         )}
                       </div>
                     )}
-                    </>
                   ))}
                 </div>
               </div>
