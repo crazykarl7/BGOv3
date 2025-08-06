@@ -83,7 +83,6 @@ function GameAdmin() {
   const [showAllGames, setShowAllGames] = useState<Set<string>>(new Set());
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [gameSortOrder, setGameSortOrder] = useState<'name_asc' | 'weight_asc'>('weight_asc');
-  const [showPlanningTable, setShowPlanningTable] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -494,17 +493,6 @@ function GameAdmin() {
       newShowAll.add(eventId);
     }
     setShowAllGames(newShowAll);
-  };
-
-  const togglePlanningTable = (eventId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newShowPlanning = new Set(showPlanningTable);
-    if (showPlanningTable.has(eventId)) {
-      newShowPlanning.delete(eventId);
-    } else {
-      newShowPlanning.add(eventId);
-    }
-    setShowPlanningTable(newShowPlanning);
   };
 
   const renderGameDescription = (game: Game) => {
@@ -944,13 +932,6 @@ function GameAdmin() {
                             <Edit className="h-5 w-5" />
                           </button>
                           <button
-                            onClick={(e) => togglePlanningTable(event.id, e)}
-                            className="text-green-600 hover:text-green-900"
-                            title="Planning"
-                          >
-                            <ListChecks className="h-5 w-5" />
-                          </button>
-                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDelete('event', event.id);
@@ -1050,50 +1031,6 @@ function GameAdmin() {
                         </div>
                       )}
                     </div>
-
-                    {showPlanningTable.has(event.id) && (
-                      <div className="px-4 py-5 sm:px-6 border-t border-gray-200 bg-gray-50">
-                        <h4 className="text-sm font-medium text-gray-900 mb-3">Planning Table - {event.name}</h4>
-                        {event.games && event.games.length > 0 ? (
-                          <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-300 bg-white rounded-lg shadow">
-                              <thead className="bg-gray-50">
-                                <tr>
-                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Table
-                                  </th>
-                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name
-                                  </th>
-                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Weight
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody className="bg-white divide-y divide-gray-200">
-                                {event.games.map((game, index) => (
-                                  <tr key={game.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                      {index + 1}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                      {game.name}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                      {game.weight.toFixed(2)}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : (
-                          <div className="text-center py-8 text-gray-500">
-                            No games assigned to this category yet.
-                          </div>
-                        )}
-                      </div>
-                    )}
                   ))}
                 </div>
               </div>
