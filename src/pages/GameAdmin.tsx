@@ -1113,13 +1113,13 @@ function GameAdmin() {
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
-                          <button
+                        {/*}  <button
                             onClick={(e) => togglePlanningTable(event.id, e)}
                             className="text-green-600 hover:text-green-900"
                             title="Planning"
                           >
                             <ListChecks className="h-5 w-5" />
-                          </button>
+                          </button> */}
                           {expandedEvents.has(event.id) ? (
                             <ChevronUp className="h-5 w-5 text-gray-400" />
                           ) : (
