@@ -230,7 +230,7 @@ export default function UserHome() {
                 <h1 className="text-xl font-semibold text-white">Olympics</h1>
               </div>
               <div className="flex items-center space-x-4">
-                <button
+                {/*    <button
                   onClick={handleTogglePresence}
                   disabled={updatingPresence}
                   className={clsx(
@@ -252,7 +252,7 @@ export default function UserHome() {
                       Pause
                     </>
                   )}
-                </button>
+                </button> */}
                 <button
                   onClick={() => navigate(`/profile/${user?.id}`)}
                   className="text-white hover:text-indigo-100 flex items-center"
