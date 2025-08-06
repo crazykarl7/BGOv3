@@ -275,10 +275,10 @@ export default function UserHome() {
             {error && (
               <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                 {error}
-                Game Status
               </div>
             )}
- <button
+ <div>
+  <h2 className="text-lg font-medium text-gray-900 mb-4">Playing Status</h2></div><button
                   onClick={handleTogglePresence}
                   disabled={updatingPresence}
                   className={clsx(
