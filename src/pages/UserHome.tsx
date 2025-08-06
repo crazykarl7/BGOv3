@@ -230,7 +230,7 @@ export default function UserHome() {
                 <h1 className="text-xl font-semibold text-white">Olympics</h1>
               </div>
               <div className="flex items-center space-x-4">
-                <button
+                {/*    <button
                   onClick={handleTogglePresence}
                   disabled={updatingPresence}
                   className={clsx(
@@ -252,7 +252,7 @@ export default function UserHome() {
                       Pause
                     </>
                   )}
-                </button>
+                </button> */}
                 <button
                   onClick={() => navigate(`/profile/${user?.id}`)}
                   className="text-white hover:text-indigo-100 flex items-center"
@@ -277,7 +277,30 @@ export default function UserHome() {
                 {error}
               </div>
             )}
-
+ <div>
+  <h2 className="text-lg font-medium text-gray-900 mb-4">Playing Status</h2></div><button
+                  onClick={handleTogglePresence}
+                  disabled={updatingPresence}
+                  className={clsx(
+                    'flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white transition-colors',
+                    playerIsPresent
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : 'bg-gray-600 hover:bg-gray-700',
+                    updatingPresence && 'opacity-50 cursor-not-allowed'
+                  )}
+                >
+                  {playerIsPresent ? (
+                    <>
+                      <Play className="h-5 w-5 mr-2" />
+                      Play
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="h-5 w-5 mr-2" />
+                      Pause
+                    </>
+                  )}
+                </button>
             {/* Available Olympics */}
             {availableOlympics.length > 0 && (
               <div className="mb-8">
