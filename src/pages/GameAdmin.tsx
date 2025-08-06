@@ -1203,16 +1203,16 @@ function GameAdmin() {
                                 </tr>
                               </thead>
                               <tbody className="bg-white divide-y divide-gray-200">
-                                {event.games.map((gameWrapper, index) => (
-                                  <tr key={gameWrapper.game.id}>
+                                {event.games?.filter(({ game }) => game).map(({ game }, index) => (
+                                  <tr key={game.id}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                       {index + 1}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                      {gameWrapper.game.name}
+                                      {game.name}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                      {gameWrapper.game.weight.toFixed(2)}
+                                      {game.weight.toFixed(2)}
                                     </td>
                                   </tr>
                                 ))}
