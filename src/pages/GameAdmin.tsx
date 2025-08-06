@@ -62,6 +62,20 @@ type EditingItem = {
   item: Partial<Game | Event>;
 };
 
+interface EditingGameData extends Partial<Game> {
+  name: string;
+  min_players: number;
+  max_players: number;
+  weight: number;
+  description?: string;
+  bgg_id?: string;
+}
+
+interface EditingEventData extends Partial<Event> {
+  name: string;
+  description?: string;
+}
+
 type Tab = 'games' | 'categories';
 
 function GameAdmin() {
@@ -69,8 +83,12 @@ function GameAdmin() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editing, setEditing] = useState<EditingItem | null>(null);
+  const [editingGameId, setEditingGameId] = useState<string | null>(null);
+  const [editingGameData, setEditingGameData] = useState<EditingGameData | null>(null);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [editingEventData, setEditingEventData] = useState<EditingEventData | null>(null);
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+  const [showPlanningTable, setShowPlanningTable] = useState<Set<string>>(new Set());
   const [showBGGImportModal, setShowBGGImportModal] = useState(false);
   const [showGeeklistImportModal, setShowGeeklistImportModal] = useState(false);
   const [bggGameId, setBggGameId] = useState('');
@@ -187,17 +205,17 @@ function GameAdmin() {
       const roundedWeight = Math.round(weight * 100) / 100;
       const constrainedWeight = Math.min(Math.max(roundedWeight || 1, 0), 5);
 
-      setEditing({
-        type: 'game',
-        item: {
-          name,
-          min_players: minPlayers || 1,
-          max_players: maxPlayers || 1,
-          weight: constrainedWeight,
-          description: description.replace(/<[^>]*>/g, ''),
-          bgg_id: bggId,
-        },
+      setEditingGameId('new');
+      setEditingGameData({
+        name,
+        min_players: minPlayers || 1,
+        max_players: maxPlayers || 1,
+        weight: constrainedWeight,
+        description: description.replace(/<[^>]*>/g, ''),
+        bgg_id: bggId,
       });
+      setEditingEventId(null);
+      setEditingEventData(null);
 
       setShowBGGImportModal(false);
       setBggGameId('');
@@ -358,41 +376,41 @@ function GameAdmin() {
 
   const handleGameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editing || editing.type !== 'game') return;
+    if (!editingGameData) return;
 
-    const game = editing.item as Partial<Game>;
-    if (!game.name || !game.min_players || !game.max_players || !game.weight) {
+    if (!editingGameData.name || !editingGameData.min_players || !editingGameData.max_players || !editingGameData.weight) {
       setError('All fields except description and BGG ID are required');
       return;
     }
 
     try {
-      if (game.bgg_id && !game.id) {
-        const isBGGIdUnique = await validateBGGId(game.bgg_id);
+      if (editingGameData.bgg_id && !editingGameData.id) {
+        const isBGGIdUnique = await validateBGGId(editingGameData.bgg_id);
         if (!isBGGIdUnique) {
-          setError(`Board game with BGGID ${game.bgg_id} already exists in the database`);
+          setError(`Board game with BGGID ${editingGameData.bgg_id} already exists in the database`);
           return;
         }
       }
 
-      const { error } = game.id
+      const { error } = editingGameData.id
         ? await supabase
             .from('game')
             .update({
-              name: game.name,
-              min_players: game.min_players,
-              max_players: game.max_players,
-              weight: game.weight,
-              description: game.description,
-              bgg_id: game.bgg_id,
+              name: editingGameData.name,
+              min_players: editingGameData.min_players,
+              max_players: editingGameData.max_players,
+              weight: editingGameData.weight,
+              description: editingGameData.description,
+              bgg_id: editingGameData.bgg_id,
               updated_at: new Date().toISOString(),
             })
-            .eq('id', game.id)
-        : await supabase.from('game').insert([game]);
+            .eq('id', editingGameData.id)
+        : await supabase.from('game').insert([editingGameData]);
 
       if (error) throw error;
       await fetchData();
-      setEditing(null);
+      setEditingGameId(null);
+      setEditingGameData(null);
     } catch (error: any) {
       setError(error.message);
     }
@@ -400,29 +418,29 @@ function GameAdmin() {
 
   const handleEventSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editing || editing.type !== 'event') return;
+    if (!editingEventData) return;
 
-    const event = editing.item as Partial<Event>;
-    if (!event.name) {
+    if (!editingEventData.name) {
       setError('Event name is required');
       return;
     }
 
     try {
-      const { error } = event.id
+      const { error } = editingEventData.id
         ? await supabase
             .from('event')
             .update({
-              name: event.name,
-              description: event.description,
+              name: editingEventData.name,
+              description: editingEventData.description,
               updated_at: new Date().toISOString(),
             })
-            .eq('id', event.id)
-        : await supabase.from('event').insert([event]);
+            .eq('id', editingEventData.id)
+        : await supabase.from('event').insert([editingEventData]);
 
       if (error) throw error;
       await fetchData();
-      setEditing(null);
+      setEditingEventId(null);
+      setEditingEventData(null);
     } catch (error: any) {
       setError(error.message);
     }
@@ -493,6 +511,17 @@ function GameAdmin() {
       newShowAll.add(eventId);
     }
     setShowAllGames(newShowAll);
+  };
+
+  const togglePlanningTable = (eventId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newShowPlanning = new Set(showPlanningTable);
+    if (showPlanningTable.has(eventId)) {
+      newShowPlanning.delete(eventId);
+    } else {
+      newShowPlanning.add(eventId);
+    }
+    setShowPlanningTable(newShowPlanning);
   };
 
   const renderGameDescription = (game: Game) => {
@@ -668,17 +697,19 @@ function GameAdmin() {
                   <div className="flex space-x-4">
                     <button
                       onClick={() =>
-                        setEditing({
-                          type: 'game',
-                          item: {
+                        {
+                          setEditingGameId('new');
+                          setEditingGameData({
                             name: '',
                             min_players: 2,
                             max_players: 4,
                             weight: 1.0,
                             description: '',
                             bgg_id: '',
-                          },
-                        })
+                          });
+                          setEditingEventId(null);
+                          setEditingEventData(null);
+                        }
                       }
                       className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                     >
@@ -702,126 +733,6 @@ function GameAdmin() {
                   </div>
                 </div>
 
-                {editing?.type === 'game' && (
-                  <div className="mb-6 bg-gray-50 p-6 rounded-lg">
-                    <h3 className="text-lg font-medium mb-4">
-                      {editing.item.id ? 'Edit Game' : 'Add New Game'}
-                    </h3>
-                    <form onSubmit={handleGameSubmit} className="space-y-4">
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Name</label>
-                          <input
-                            type="text"
-                            value={editing.item.name || ''}
-                            onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, name: e.target.value },
-                              })
-                            }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Minimum Players
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={editing.item.min_players || ''}
-                            onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, min_players: parseInt(e.target.value) },
-                              })
-                            }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Maximum Players
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={editing.item.max_players || ''}
-                            onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, max_players: parseInt(e.target.value) },
-                              })
-                            }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Weight</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            max="5"
-                            value={editing.item.weight || ''}
-                            onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, weight: parseFloat(e.target.value) },
-                              })
-                            }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
-                        <div className="sm:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700">Description</label>
-                          <textarea
-                            value={editing.item.description || ''}
-                            onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, description: e.target.value },
-                              })
-                            }
-                            rows={3}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">BGG ID</label>
-                          <input
-                            type="text"
-                            value={editing.item.bgg_id || ''}
-                            onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, bgg_id: e.target.value },
-                              })
-                            }
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-end space-x-3">
-                        <button
-                          type="button"
-                          onClick={() => setEditing(null)}
-                          className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                        >
-                          {editing.item.id ? 'Update' : 'Create'}
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
-
                 {renderGamesTable()}
               </div>
             )}
@@ -832,10 +743,12 @@ function GameAdmin() {
                   <h2 className="text-lg font-medium text-gray-900">Categories</h2>
                   <button
                     onClick={() =>
-                      setEditing({
-                        type: 'event',
-                        item: { name: '', description: '' },
-                      })
+                      {
+                        setEditingEventId('new');
+                        setEditingEventData({ name: '', description: '' });
+                        setEditingGameId(null);
+                        setEditingGameData(null);
+                      }
                     }
                     className="flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                   >
@@ -844,22 +757,20 @@ function GameAdmin() {
                   </button>
                 </div>
 
-                {editing?.type === 'event' && (
+                {editingEventId === 'new' && editingEventData && (
                   <div className="mb-6 bg-gray-50 p-6 rounded-lg">
-                    <h3 className="text-lg font-medium mb-4">
-                      {editing.item.id ? 'Edit Event' : 'Add New Category'}
-                    </h3>
+                    <h3 className="text-lg font-medium mb-4">Add New Category</h3>
                     <form onSubmit={handleEventSubmit} className="space-y-4">
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
                         <div>
                           <label className="block text-sm font-medium text-gray-700">Name</label>
                           <input
                             type="text"
-                            value={editing.item.name || ''}
+                            value={editingEventData.name || ''}
                             onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, name: e.target.value },
+                              setEditingEventData({
+                                ...editingEventData,
+                                name: e.target.value,
                               })
                             }
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -868,11 +779,11 @@ function GameAdmin() {
                         <div>
                           <label className="block text-sm font-medium text-gray-700">Description</label>
                           <textarea
-                            value={editing.item.description || ''}
+                            value={editingEventData.description || ''}
                             onChange={(e) =>
-                              setEditing({
-                                ...editing,
-                                item: { ...editing.item, description: e.target.value },
+                              setEditingEventData({
+                                ...editingEventData,
+                                description: e.target.value,
                               })
                             }
                             rows={3}
@@ -883,7 +794,10 @@ function GameAdmin() {
                       <div className="flex justify-end space-x-3">
                         <button
                           type="button"
-                          onClick={() => setEditing(null)}
+                          onClick={() => {
+                            setEditingEventId(null);
+                            setEditingEventData(null);
+                          }}
                           className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
                         >
                           Cancel
@@ -892,7 +806,7 @@ function GameAdmin() {
                           type="submit"
                           className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                         >
-                          {editing.item.id ? 'Update' : 'Create'}
+                          Create
                         </button>
                       </div>
                     </form>
@@ -924,7 +838,10 @@ function GameAdmin() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setEditing({ type: 'event', item: event });
+                              setEditingEventId(event.id);
+                              setEditingEventData(event);
+                              setEditingGameId(null);
+                              setEditingGameData(null);
                             }}
                             className="text-indigo-600 hover:text-indigo-900"
                             title="Edit"
@@ -941,6 +858,13 @@ function GameAdmin() {
                           >
                             <Trash2 className="h-5 w-5" />
                           </button>
+                          <button
+                            onClick={(e) => togglePlanningTable(event.id, e)}
+                            className="text-green-600 hover:text-green-900"
+                            title="Planning"
+                          >
+                            <ListChecks className="h-5 w-5" />
+                          </button>
                           {expandedEvents.has(event.id) ? (
                             <ChevronUp className="h-5 w-5 text-gray-400" />
                           ) : (
@@ -948,6 +872,100 @@ function GameAdmin() {
                           )}
                         </div>
                       </div>
+
+                      {editingEventId === event.id && editingEventData && (
+                        <div className="px-4 py-5 sm:px-6 border-t border-gray-200 bg-gray-50">
+                          <h3 className="text-lg font-medium mb-4">Edit Category</h3>
+                          <form onSubmit={handleEventSubmit} className="space-y-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Name</label>
+                                <input
+                                  type="text"
+                                  value={editingEventData.name || ''}
+                                  onChange={(e) =>
+                                    setEditingEventData({
+                                      ...editingEventData,
+                                      name: e.target.value,
+                                    })
+                                  }
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea
+                                  value={editingEventData.description || ''}
+                                  onChange={(e) =>
+                                    setEditingEventData({
+                                      ...editingEventData,
+                                      description: e.target.value,
+                                    })
+                                  }
+                                  rows={3}
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex justify-end space-x-3">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingEventId(null);
+                                  setEditingEventData(null);
+                                }}
+                                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="submit"
+                                className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                              >
+                                Update
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      )}
+
+                      {showPlanningTable.has(event.id) && event.games && event.games.length > 0 && (
+                        <div className="px-4 py-5 sm:px-6 border-t border-gray-200 bg-white">
+                          <h4 className="text-sm font-medium text-gray-900 mb-3">Planning Table</h4>
+                          <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-300">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Table
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Name
+                                  </th>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Weight
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white divide-y divide-gray-200">
+                                {event.games.map((gameWrapper, index) => (
+                                  <tr key={gameWrapper.game.id}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                      {index + 1}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                      {gameWrapper.game.name}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                      {gameWrapper.game.weight.toFixed(2)}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
 
                       {expandedEvents.has(event.id) && (
                         <div className="px-4 py-5 sm:px-6 border-t border-gray-200">
@@ -988,50 +1006,305 @@ function GameAdmin() {
                                   <span className="sm:hidden">
                                     {showAllGames.has(event.id) ? 'All' : 'Category'}
                                   </span>
-                                </button>
-                              </div>
-                            </div>
+                    <React.Fragment key={game.id}>
+                      <tr>
+                        <td className="py-4 pl-4 pr-3 text-sm">
+                          <div className="font-medium text-gray-900">
+                            {game.bgg_id ? (
+                              <a
+                                href={`https://boardgamegeek.com/boardgame/${game.bgg_id}/`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-indigo-600 hover:text-indigo-900 hover:underline"
+                              >
+                                {game.name}
+                              </a>
+                            ) : (
+                              game.name
+                            )}
                           </div>
-
-                          <div className="space-y-2">
-                            {filteredGames(event.id, event.games || []).map((game) => {
-                              const isAssigned = event.games?.some((g) => g.id === game.id);
-                              return (
-                                <div
-                                  key={game.id}
-                                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 space-y-2 sm:space-y-0"
-                                >
+                          {renderGameDescription(game)}
+                        </td>
+                        <td className="px-3 py-4 text-sm text-gray-500">
+                          {game.min_players === game.max_players
+                            ? game.min_players
+                            : `${game.min_players}-${game.max_players}`}
+                        </td>
+                        <td className="px-3 py-4 text-sm text-gray-500">{game.weight.toFixed(2)}</td>
+                        <td className="py-4 pl-3 pr-4 text-right text-sm font-medium">
+                          <div className="flex justify-end space-x-3">
+                            <button
+                              onClick={() => {
+                                setEditingGameId(game.id);
+                                setEditingGameData(game);
+                                setEditingEventId(null);
+                                setEditingEventData(null);
+                              }}
+                              className="text-indigo-600 hover:text-indigo-900"
+                              title="Edit"
+                            >
+                              <Edit className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete('game', game.id)}
+                              className="text-red-600 hover:text-red-900"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      {editingGameId === game.id && editingGameData && (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-6 bg-gray-50">
+                            <div className="max-w-4xl">
+                              <h3 className="text-lg font-medium mb-4">Edit Game</h3>
+                              <form onSubmit={handleGameSubmit} className="space-y-4">
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                   <div>
-                                    <div className="font-medium text-gray-900">{game.name}</div>
-                                    <div className="text-sm text-gray-500">
-                                      {game.min_players === game.max_players
-                                        ? `${game.min_players} players`
-                                        : `${game.min_players}-${game.max_players} players`}{' '}
-                                      • Weight: {game.weight.toFixed(2)}
-                                    </div>
-                                    {renderGameDescription(game)}
+                                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                                    <input
+                                      type="text"
+                                      value={editingGameData.name || ''}
+                                      onChange={(e) =>
+                                        setEditingGameData({
+                                          ...editingGameData,
+                                          name: e.target.value,
+                                        })
+                                      }
+                                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    />
                                   </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                      Minimum Players
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      value={editingGameData.min_players || ''}
+                                      onChange={(e) =>
+                                        setEditingGameData({
+                                          ...editingGameData,
+                                          min_players: parseInt(e.target.value),
+                                        })
+                                      }
+                                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                      Maximum Players
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      value={editingGameData.max_players || ''}
+                                      onChange={(e) =>
+                                        setEditingGameData({
+                                          ...editingGameData,
+                                          max_players: parseInt(e.target.value),
+                                        })
+                                      }
+                                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700">Weight</label>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      max="5"
+                                      value={editingGameData.weight || ''}
+                                      onChange={(e) =>
+                                        setEditingGameData({
+                                          ...editingGameData,
+                                          weight: parseFloat(e.target.value),
+                                        })
+                                      }
+                                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    />
+                                  </div>
+                                  <div className="sm:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700">Description</label>
+                                    <textarea
+                                      value={editingGameData.description || ''}
+                                      onChange={(e) =>
+                                        setEditingGameData({
+                                          ...editingGameData,
+                                          description: e.target.value,
+                                        })
+                                      }
+                                      rows={3}
+                                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700">BGG ID</label>
+                                    <input
+                                      type="text"
+                                      value={editingGameData.bgg_id || ''}
+                                      onChange={(e) =>
+                                        setEditingGameData({
+                                          ...editingGameData,
+                                          bgg_id: e.target.value,
+                                        })
+                                      }
+                                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex justify-end space-x-3">
                                   <button
-                                    onClick={() =>
-                                      handleGameAssignment(event.id, game.id, !isAssigned)
-                                    }
-                                    className={clsx(
-                                      'px-3 py-1 rounded-md text-sm font-medium whitespace-nowrap',
-                                      isAssigned
-                                        ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                        : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                    )}
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingGameId(null);
+                                      setEditingGameData(null);
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
                                   >
-                                    {isAssigned ? 'Remove' : 'Add'}
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                                  >
+                                    Update
                                   </button>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </div>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
                       )}
-                    </div>
+                    </React.Fragment>
                   ))}
+                  {editingGameId === 'new' && editingGameData && (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-6 bg-gray-50">
+                        <div className="max-w-4xl">
+                          <h3 className="text-lg font-medium mb-4">Add New Game</h3>
+                          <form onSubmit={handleGameSubmit} className="space-y-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Name</label>
+                                <input
+                                  type="text"
+                                  value={editingGameData.name || ''}
+                                  onChange={(e) =>
+                                    setEditingGameData({
+                                      ...editingGameData,
+                                      name: e.target.value,
+                                    })
+                                  }
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Minimum Players
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={editingGameData.min_players || ''}
+                                  onChange={(e) =>
+                                    setEditingGameData({
+                                      ...editingGameData,
+                                      min_players: parseInt(e.target.value),
+                                    })
+                                  }
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Maximum Players
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={editingGameData.max_players || ''}
+                                  onChange={(e) =>
+                                    setEditingGameData({
+                                      ...editingGameData,
+                                      max_players: parseInt(e.target.value),
+                                    })
+                                  }
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Weight</label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  max="5"
+                                  value={editingGameData.weight || ''}
+                                  onChange={(e) =>
+                                    setEditingGameData({
+                                      ...editingGameData,
+                                      weight: parseFloat(e.target.value),
+                                    })
+                                  }
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                              <div className="sm:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea
+                                  value={editingGameData.description || ''}
+                                  onChange={(e) =>
+                                    setEditingGameData({
+                                      ...editingGameData,
+                                      description: e.target.value,
+                                    })
+                                  }
+                                  rows={3}
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">BGG ID</label>
+                                <input
+                                  type="text"
+                                  value={editingGameData.bgg_id || ''}
+                                  onChange={(e) =>
+                                    setEditingGameData({
+                                      ...editingGameData,
+                                      bgg_id: e.target.value,
+                                    })
+                                  }
+                                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex justify-end space-x-3">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingGameId(null);
+                                  setEditingGameData(null);
+                                }}
+                                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="submit"
+                                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                              >
+                                Create
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </div>
               </div>
             )}
