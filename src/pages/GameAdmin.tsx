@@ -867,7 +867,7 @@ function GameAdmin() {
                 </div>
   {editingGameId === 'new' && editingGameData && (
             <tr>
-              <td colSpan={5} className="px-4 py-6 bg-gray-50">
+              <td colSpan={4} className="px-4 py-6 bg-gray-50">
                 <div className="max-w-4xl">
                   <h3 className="text-lg font-medium mb-4">Add New Game</h3>
                   <form onSubmit={handleGameSubmit} className="space-y-4">
