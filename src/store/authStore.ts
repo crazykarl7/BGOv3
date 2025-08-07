@@ -6,6 +6,9 @@ interface Profile {
   username: string;
   full_name: string | null;
   avatar_url: string | null;
+  avatar_shape?: string;
+  avatar_foreground_color?: string;
+  avatar_background_color?: string;
   is_admin: boolean;
 }
 

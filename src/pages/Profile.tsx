@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
-import { LogOut, User, ArrowLeft, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { LogOut, ArrowLeft, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { validatePassword } from '../utils/validation';
+import AvatarGenerator from '../components/AvatarGenerator';
+import CustomAvatar from '../components/CustomAvatar';
 
 interface Profile {
   id: string;
   username: string;
   full_name: string | null;
   avatar_url: string | null;
+  avatar_shape?: string;
+  avatar_foreground_color?: string;
+  avatar_background_color?: string;
 }
 
 interface PasswordUpdate {
@@ -23,7 +28,9 @@ export default function Profile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [selectedShape, setSelectedShape] = useState('user');
+  const [selectedForegroundColor, setSelectedForegroundColor] = useState('#4f46e5');
+  const [selectedBackgroundColor, setSelectedBackgroundColor] = useState('#e0e7ff');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error'>('success');
   const [loading, setLoading] = useState(true);
@@ -54,7 +61,9 @@ export default function Profile() {
       setProfile(data);
       setFullName(data.full_name || '');
       setUsername(data.username || '');
-      setAvatarUrl(data.avatar_url || '');
+      setSelectedShape(data.avatar_shape || 'user');
+      setSelectedForegroundColor(data.avatar_foreground_color || '#4f46e5');
+      setSelectedBackgroundColor(data.avatar_background_color || '#e0e7ff');
     } catch (error: any) {
       console.error('Error fetching profile:', error);
       setMessage(error.message);
@@ -72,7 +81,9 @@ export default function Profile() {
         .update({
           full_name: fullName,
           username,
-          avatar_url: avatarUrl,
+          avatar_shape: selectedShape,
+          avatar_foreground_color: selectedForegroundColor,
+          avatar_background_color: selectedBackgroundColor,
           updated_at: new Date().toISOString(),
         })
         .eq('id', userId);
@@ -85,6 +96,12 @@ export default function Profile() {
       setMessage(error.message);
       setMessageType('error');
     }
+  };
+
+  const handleAvatarChange = (shape: string, foregroundColor: string, backgroundColor: string) => {
+    setSelectedShape(shape);
+    setSelectedForegroundColor(foregroundColor);
+    setSelectedBackgroundColor(backgroundColor);
   };
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
@@ -215,17 +232,12 @@ export default function Profile() {
             )}
 
             <div className="flex items-center space-x-4 mb-6">
-              {profile?.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt={profile.full_name || profile.username}
-                  className="h-16 w-16 rounded-full"
-                />
-              ) : (
-                <div className="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center">
-                  <User className="h-8 w-8 text-indigo-600" />
-                </div>
-              )}
+              <CustomAvatar
+                shape={selectedShape}
+                foregroundColor={selectedForegroundColor}
+                backgroundColor={selectedBackgroundColor}
+                size="large"
+              />
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
                   {profile?.full_name || profile?.username || 'User Profile'}
@@ -255,15 +267,17 @@ export default function Profile() {
                 />
               </div>
 
-              {/*}  <div>
-                <label className="block text-sm font-medium text-gray-700">Avatar URL</label>
-                <input
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Customize Avatar
+                </label>
+                <AvatarGenerator
+                  initialShape={selectedShape}
+                  initialForegroundColor={selectedForegroundColor}
+                  initialBackgroundColor={selectedBackgroundColor}
+                  onChange={handleAvatarChange}
                 />
-              </div> */}
+              </div>
 
               <div className="flex justify-end">
                 <button
