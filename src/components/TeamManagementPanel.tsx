@@ -4,6 +4,7 @@ import { Team, Event, Profile } from '../types/database';
 import { addTeamMember, removeTeamMember } from '../api/teamMembers';
 import { assignPlayerToEvent } from '../api/teamEventAssignments';
 import { useAuthStore } from '../store/authStore';
+import CustomAvatar from '../components/CustomAvatar';
 import Select from 'react-select';
 
 interface TeamManagementPanelProps {
@@ -248,9 +249,12 @@ export default function TeamManagementPanel({
                     className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-md"
                   >
                     <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <Users className="h-4 w-4 text-indigo-600" />
-                      </div>
+                      <CustomAvatar
+                        shape={member.player?.avatar_shape}
+                        foregroundColor={member.player?.avatar_foreground_color}
+                        backgroundColor={member.player?.avatar_background_color}
+                        size="small"
+                      />
                       <span className="ml-3 text-sm font-medium text-gray-900">
                         {member.player?.full_name || member.player?.username}
                       </span>

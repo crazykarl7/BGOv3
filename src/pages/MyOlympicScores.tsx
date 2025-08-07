@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { Olympic, Event, Game, Profile, GameScore } from '../types/database';
 import { Trophy, ArrowLeft, LogOut, ChevronRight, Medal, User, Clock } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import CustomAvatar from '../components/CustomAvatar';
 import clsx from 'clsx';
 
 interface GameWithScores extends Game {
@@ -308,17 +309,12 @@ export default function MyOlympicScores() {
                               <td className="py-4 pl-4 pr-3 text-sm">
                                 <div className="flex items-center">
                                   <div className="h-10 w-10 flex-shrink-0">
-                                    {score.player?.avatar_url ? (
-                                      <img
-                                        className="h-10 w-10 rounded-full"
-                                        src={score.player.avatar_url}
-                                        alt=""
-                                      />
-                                    ) : (
-                                      <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                        <User className="h-5 w-5 text-indigo-600" />
-                                      </div>
-                                    )}
+                                    <CustomAvatar
+                                      shape={score.player?.avatar_shape}
+                                      foregroundColor={score.player?.avatar_foreground_color}
+                                      backgroundColor={score.player?.avatar_background_color}
+                                      size="medium"
+                                    />
                                   </div>
                                   <div className="ml-4">
                                     <div className="font-medium text-gray-900">
