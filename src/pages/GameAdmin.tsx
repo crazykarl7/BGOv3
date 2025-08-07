@@ -1308,7 +1308,7 @@ function GameAdmin() {
                                               game.name
                                             )}
                                           </div>
-                                          {renderGameDescription(game)}
+                                          {/*}  {renderGameDescription(game)} */}
                                         </td>
                                         <td className="px-3 py-4 text-sm text-gray-500">
                                           {game.min_players === game.max_players
