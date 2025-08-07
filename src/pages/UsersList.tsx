@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Users, User, LogOut, ArrowLeft, Trash2, Plus, Search } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import CustomAvatar from '../components/CustomAvatar';
 import clsx from 'clsx';
 
 interface Profile {
@@ -292,17 +293,12 @@ export default function UsersList() {
                       <td className="block sm:table-cell py-4 pl-4 pr-3 text-sm">
                         <div className="flex items-center">
                           <div className="h-10 w-10 flex-shrink-0">
-                            {profile.avatar_url ? (
-                              <img
-                                className="h-10 w-10 rounded-full"
-                                src={profile.avatar_url}
-                                alt=""
-                              />
-                            ) : (
-                              <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <User className="h-5 w-5 text-indigo-600" />
-                              </div>
-                            )}
+                            <CustomAvatar
+                              shape={profile.avatar_shape}
+                              foregroundColor={profile.avatar_foreground_color}
+                              backgroundColor={profile.avatar_background_color}
+                              size="medium"
+                            />
                           </div>
                           <div className="ml-4">
                             <div className="font-medium text-gray-900">
