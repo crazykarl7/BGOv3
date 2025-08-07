@@ -863,7 +863,9 @@ function GameAdmin() {
                       Import from Geeklist
                     </button>
                   </div>
-                    {editingGameId === 'new' && editingGameData && (
+                  
+                </div>
+  {editingGameId === 'new' && editingGameData && (
             <tr>
               <td colSpan={4} className="px-4 py-6 bg-gray-50">
                 <div className="max-w-4xl">
@@ -987,8 +989,6 @@ function GameAdmin() {
               </td>
             </tr>
           )}
-                </div>
-
                 {renderGamesTable()}
               </div>
             )}
