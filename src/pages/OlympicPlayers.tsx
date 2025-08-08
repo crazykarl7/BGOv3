@@ -405,6 +405,9 @@ export default function OlympicPlayers() {
                             <div className="font-medium text-gray-900">
                               {player.full_name || player.username}
                             </div>
+                             {player.full_name && (
+                                        <div className="text-gray-500">{player.username}</div>
+                                      )}
                           </div>
                         </div>
                         {/* Mobile-only content */}
