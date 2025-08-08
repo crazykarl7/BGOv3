@@ -12,6 +12,7 @@ interface TeamManagementPanelProps {
   events: Event[];
   onTeamUpdated: () => void;
   onTeamDeleted: () => void;
+  onRefreshEvents: () => void;
 }
 
 interface TeamMember {
@@ -35,6 +36,7 @@ export default function TeamManagementPanel({
   events,
   onTeamUpdated,
   onTeamDeleted,
+  onRefreshEvents,
 }: TeamManagementPanelProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -292,7 +294,10 @@ export default function TeamManagementPanel({
                 <h4 className="text-sm font-medium text-gray-700">Category Assignments</h4>
                 {!editingAssignments && isUserTeamCreator && isUserInTeam && (
                   <button
-                    onClick={() => setEditingAssignments(true)}
+                    onClick={async () => {
+                      await onRefreshEvents();
+                      setEditingAssignments(true);
+                    }}
                     className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700"
                   >
                     <Edit2 className="h-4 w-4 mr-1" />

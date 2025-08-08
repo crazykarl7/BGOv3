@@ -161,6 +161,7 @@ export default function TeamAdmin() {
                   events={events}
                   onTeamUpdated={fetchData}
                   onTeamDeleted={fetchData}
+                  onRefreshEvents={fetchData}
                 />
               </div>
             )}
@@ -197,6 +198,7 @@ export default function TeamAdmin() {
                       events={events}
                       onTeamUpdated={fetchData}
                       onTeamDeleted={fetchData}
+                      onRefreshEvents={fetchData}
                     />
                   ))}
                 </div>
