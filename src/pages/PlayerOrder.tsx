@@ -14,6 +14,7 @@ import {
   Clock
 } from 'lucide-react';
 import clsx from 'clsx';
+import CustomAvatar from '../components/CustomAvatar';
 
 interface PlayerWithPresence extends Profile {
   is_present: boolean;
