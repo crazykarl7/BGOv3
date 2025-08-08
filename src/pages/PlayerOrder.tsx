@@ -505,9 +505,9 @@ export default function PlayerOrder() {
                                         />
                                       ) : (
                                         <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                          <Users className="h-5 w-5 text-indigo-600" /> */}
+                                          <Users className="h-5 w-5 text-indigo-600" /> 
                                         </div>
-                                      )}
+                                      )} */}
                                     </div>
                                     <div className="ml-4">
                                       <div className="font-medium text-gray-900">
