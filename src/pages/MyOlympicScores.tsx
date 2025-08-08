@@ -323,8 +323,8 @@ export default function MyOlympicScores() {
                                         <span className="ml-2 text-xs text-indigo-600 font-normal">(You)</span>
                                       )}
                                     </div>
-                                    {score.player?.full_name && (
-                                      <div className="text-gray-500">{score.player.username}</div>
+                                    {/*}    {score.player?.full_name && (
+                                      <div className="text-gray-500">{score.player.username}</div> */}
                                     )}
                                   </div>
                                 </div>
