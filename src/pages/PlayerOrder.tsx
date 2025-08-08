@@ -421,7 +421,7 @@ export default function PlayerOrder() {
                                   {player.full_name || player.username}
                                 </div>
                                 {player.full_name && (
-                                  <div className="text-gray-500">{player.username}</div>
+                                  <div className="text-gray-500"></div>
                                 )}
                               </div>
                             </div>
