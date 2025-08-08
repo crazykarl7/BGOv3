@@ -409,9 +409,9 @@ export default function PlayerOrder() {
                                 )} */}
                                 <div className="h-10 w-10 flex-shrink-0">
                                     <CustomAvatar
-                                      shape={score.player?.avatar_shape}
-                                      foregroundColor={score.player?.avatar_foreground_color}
-                                      backgroundColor={score.player?.avatar_background_color}
+                                      shape={player.avatar_shape}
+                                      foregroundColor={player.avatar_foreground_color}
+                                      backgroundColor={player.avatar_background_color}
                                       size="medium"
                                     />
                                   </div>
