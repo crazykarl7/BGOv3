@@ -497,7 +497,7 @@ export default function PlayerOrder() {
                                 {player ? (
                                   <div className="flex items-center">
                                     <div className="h-10 w-10 flex-shrink-0">
-                                      {player.avatar_url ? (
+                                      {/*}   {player.avatar_url ? (
                                         <img
                                           className="h-10 w-10 rounded-full"
                                           src={player.avatar_url}
@@ -505,7 +505,7 @@ export default function PlayerOrder() {
                                         />
                                       ) : (
                                         <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                          <Users className="h-5 w-5 text-indigo-600" />
+                                          <Users className="h-5 w-5 text-indigo-600" /> */}
                                         </div>
                                       )}
                                     </div>
