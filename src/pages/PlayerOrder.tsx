@@ -407,12 +407,14 @@ export default function PlayerOrder() {
                                     <Users className="h-5 w-5 text-indigo-600" />
                                   </div>
                                 )} */}
-                                <CustomAvatar
+                                <div className="h-10 w-10 flex-shrink-0">
+                                    <CustomAvatar
                                       shape={score.player?.avatar_shape}
                                       foregroundColor={score.player?.avatar_foreground_color}
                                       backgroundColor={score.player?.avatar_background_color}
                                       size="medium"
                                     />
+                                  </div>
                               </div>
                               <div className="ml-4">
                                 <div className="font-medium text-gray-900">
