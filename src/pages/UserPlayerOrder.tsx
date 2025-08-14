@@ -45,7 +45,7 @@ export default function UserPlayerOrder() {
       setOlympic(olympicData);
 
       // Parse the generated player list
-      if (olympicData.last_generated_player_list) {
+      if (olympicData.last_generated_player_list !== null) {
         try {
           const generatedList: GeneratedPlayerList = JSON.parse(olympicData.last_generated_player_list);
           setGenerationDate(generatedList.timestamp);
