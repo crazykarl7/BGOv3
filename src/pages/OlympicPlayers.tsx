@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Profile, Olympic, OlympicPlayer } from '../types/database';
-import { Users, ArrowLeft, LogOut, Search, Check, X, DollarSign, UserCheck, UserX } from 'lucide-react';
+import { Users, ArrowLeft, LogOut, Search, Check, X, DollarSign, UserCheck, UserX, RefreshCw } from 'lucide-react';
 import CustomAvatar from '../components/CustomAvatar';
 import clsx from 'clsx';
 
@@ -15,6 +15,7 @@ export default function OlympicPlayers() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [saving, setSaving] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [playerPayments, setPlayerPayments] = useState<Record<string, boolean>>({});
   const [playerPresence, setPlayerPresence] = useState<Record<string, boolean>>({});
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function OlympicPlayers() {
   }, [olympicId]);
 
   const fetchData = async () => {
+    setRefreshing(true);
     try {
       // First get the olympic details and current players
       const [olympicResponse, olympicPlayersResponse] = await Promise.all([
@@ -58,7 +60,14 @@ export default function OlympicPlayers() {
         }
       });
 
-      setPlayers(playersList);
+      // Sort players alphabetically by full_name or username
+      const sortedPlayers = playersList.sort((a, b) => {
+        const nameA = (a.full_name || a.username).toLowerCase();
+        const nameB = (b.full_name || b.username).toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+
+      setPlayers(sortedPlayers);
       setSelectedPlayers(selectedIds);
       setPlayerPayments(payments);
       setPlayerPresence(presence);
@@ -66,6 +75,7 @@ export default function OlympicPlayers() {
       setError(error.message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -277,7 +287,15 @@ export default function OlympicPlayers() {
         const newPlayers = availablePlayers.filter(
           player => !players.some(p => p.id === player.id)
         );
-        setPlayers([...players, ...newPlayers]);
+        
+        // Sort the combined list alphabetically
+        const combinedPlayers = [...players, ...newPlayers].sort((a, b) => {
+          const nameA = (a.full_name || a.username).toLowerCase();
+          const nameB = (b.full_name || b.username).toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+        
+        setPlayers(combinedPlayers);
       }
     } catch (error: any) {
       setError(error.message);
@@ -355,13 +373,24 @@ export default function OlympicPlayers() {
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
-              <button
-                onClick={handleAddPlayer}
-                className="ml-0 sm:ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-              >
-                <span className="hidden sm:inline">Show All Players</span>
-                <span className="sm:hidden">Show All</span>
-              </button>
+              <div className="flex space-x-2">
+                <button
+                  onClick={fetchData}
+                  disabled={refreshing}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <RefreshCw className={clsx('h-5 w-5 mr-2', refreshing && 'animate-spin')} />
+                  <span className="hidden sm:inline">{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+                  <span className="sm:hidden">{refreshing ? '...' : 'Refresh'}</span>
+                </button>
+                <button
+                  onClick={handleAddPlayer}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                >
+                  <span className="hidden sm:inline">Show All Players</span>
+                  <span className="sm:hidden">Show All</span>
+                </button>
+              </div>
             </div>
 
             <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg">
