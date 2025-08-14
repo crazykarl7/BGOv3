@@ -42,6 +42,7 @@ export interface Olympic {
   registration_deadline: string;
   created_at: string;
   updated_at: string;
+  last_generated_player_list?: string | null;
   events?: Event[];
   players?: Profile[];
 }

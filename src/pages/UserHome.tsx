@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import { Olympic } from '../types/database';
-import { Trophy, Medal, User, LogOut, Calendar, ChevronRight, Users, Play, Pause } from 'lucide-react';
+import { Trophy, Medal, User, LogOut, Calendar, ChevronRight, Users, Play, Pause, ListOrdered } from 'lucide-react';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 
@@ -371,6 +371,13 @@ export default function UserHome() {
                                   Team
                                 </button>
                                 <button
+                                  onClick={() => navigate(`/olympics/${olympic.id}/user-player-order`)}
+                                  className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                                >
+                                  <ListOrdered className="h-5 w-5 mr-1" />
+                                  Order
+                                </button>
+                                <button
                                   onClick={() => navigate(`/olympics/${olympic.id}/my-scores`)}
                                   className="text-indigo-600 hover:text-indigo-900 flex items-center"
                                 >
@@ -398,6 +405,13 @@ export default function UserHome() {
                               >
                                 <Users className="h-5 w-5 mr-1" />
                                 Team
+                              </button>
+                              <button
+                                onClick={() => navigate(`/olympics/${olympic.id}/user-player-order`)}
+                                className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                              >
+                                <ListOrdered className="h-5 w-5 mr-1" />
+                                Order
                               </button>
                               {/*} <button
                                 onClick={() => navigate(`/olympics/${olympic.id}/scores`)}
