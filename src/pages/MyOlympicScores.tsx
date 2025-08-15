@@ -279,83 +279,84 @@ export default function MyOlympicScores() {
                   </div>
 
                   {gameScores.length > 0 ? (
-                    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-300">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
-                              Player
-                            </th>
-                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                              Score
-                            </th>
-                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                              Points
-                            </th>
-                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                              Medal
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 bg-white">
-                          {gameScores.map((score) => (
-                            <tr 
-                              key={score.id}
-                              className={score.player_id === user?.id ? 'bg-indigo-50' : ''}
-                            >
-                              <td className="py-4 pl-4 pr-3 text-sm">
-                                <div className="flex items-center">
-                                  <div className="h-10 w-10 flex-shrink-0">
-                                    <CustomAvatar
-                                      shape={score.player?.avatar_shape}
-                                      foregroundColor={score.player?.avatar_foreground_color}
-                                      backgroundColor={score.player?.avatar_background_color}
-                                      size="medium"
-                                    />
-                                  </div>
-                                  <div className="ml-4">
-                                    <div className="font-medium text-gray-900">
-                                      {score.player?.full_name || score.player?.username}
-                                      {score.player_id === user?.id && (
-                                        <span className="ml-2 text-xs text-indigo-600 font-normal">(You)</span>
-                                      )}
-                                    </div>
-                                    {/*} {score.player?.full_name && (
-                                      <div className="text-gray-500">{score.player.username}</div> 
-                                    )} */}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-3 py-4 text-sm text-gray-900 font-medium">
-                                {score.score}
-                              </td>
-                              <td className="px-3 py-4 text-sm text-gray-900 font-medium">
-                                {score.points}
-                              </td>
-                              <td className="px-3 py-4 text-sm">
-                                <div className="flex items-center">
-                                  {getMedalDisplay(score.medal)}
-                                  {score.medal && (
-                                    <span className="ml-2 text-sm font-medium text-gray-900 capitalize">
-                                      {score.medal}
-                                    </span>
-                                  )}
-                                </div>
-                              </td>
+                    <>
+                      <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                        <table className="min-w-full divide-y divide-gray-300">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                                Player
+                              </th>
+                              <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                Score
+                              </th>
+                              <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                Points
+                              </th>
+                              <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                Medal
+                              </th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Time Played Display */ }
-                    {gameScores.length > 0 && gameScores[0].time_to_play && (
-                      <div className="mt-4 flex items-center text-sm text-gray-600">
-                        <Clock className="h-4 w-4 mr-2" />
-                        <span className="font-medium">Time Played:</span>
-                        <span className="ml-1">{gameScores[0].time_to_play} minutes</span>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200 bg-white">
+                            {gameScores.map((score) => (
+                              <tr 
+                                key={score.id}
+                                className={score.player_id === user?.id ? 'bg-indigo-50' : ''}
+                              >
+                                <td className="py-4 pl-4 pr-3 text-sm">
+                                  <div className="flex items-center">
+                                    <div className="h-10 w-10 flex-shrink-0">
+                                      <CustomAvatar
+                                        shape={score.player?.avatar_shape}
+                                        foregroundColor={score.player?.avatar_foreground_color}
+                                        backgroundColor={score.player?.avatar_background_color}
+                                        size="medium"
+                                      />
+                                    </div>
+                                    <div className="ml-4">
+                                      <div className="font-medium text-gray-900">
+                                        {score.player?.full_name || score.player?.username}
+                                        {score.player_id === user?.id && (
+                                          <span className="ml-2 text-xs text-indigo-600 font-normal">(You)</span>
+                                        )}
+                                      </div>
+                                      {/*} {score.player?.full_name && (
+                                        <div className="text-gray-500">{score.player.username}</div> 
+                                      )} */}
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-3 py-4 text-sm text-gray-900 font-medium">
+                                  {score.score}
+                                </td>
+                                <td className="px-3 py-4 text-sm text-gray-900 font-medium">
+                                  {score.points}
+                                </td>
+                                <td className="px-3 py-4 text-sm">
+                                  <div className="flex items-center">
+                                    {getMedalDisplay(score.medal)}
+                                    {score.medal && (
+                                      <span className="ml-2 text-sm font-medium text-gray-900 capitalize">
+                                        {score.medal}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                    )}
+
+                      {gameScores.length > 0 && gameScores[0].time_to_play && (
+                        <div className="mt-4 flex items-center text-sm text-gray-600">
+                          <Clock className="h-4 w-4 mr-2" />
+                          <span className="font-medium">Time Played:</span>
+                          <span className="ml-1">{gameScores[0].time_to_play} minutes</span>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
                       <Medal className="mx-auto h-12 w-12 text-gray-400" />
