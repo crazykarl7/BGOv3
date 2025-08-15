@@ -348,7 +348,7 @@ export default function MyOlympicScores() {
                       </table>
                     </div>
 
-                    
+                    {/* Time Played Display */}
                     {gameScores.length > 0 && gameScores[0].time_to_play && (
                       <div className="mt-4 flex items-center text-sm text-gray-600">
                         <Clock className="h-4 w-4 mr-2" />
