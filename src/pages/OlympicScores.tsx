@@ -477,7 +477,8 @@ export default function OlympicScores() {
                 <div>
                   <div className="mb-6">
                     <h2 className="text-xl font-medium text-gray-900">{currentGame.name}</h2>
-                 {/*}   <p className="text-sm text-gray-500 mt-1">
+                 {/* --Hide Weight and description of game
+                 <p className="text-sm text-gray-500 mt-1">
                       {currentGame.min_players}-{currentGame.max_players} players • Weight:{' '}
                       {currentGame.weight}
                     </p>
@@ -486,7 +487,8 @@ export default function OlympicScores() {
                     )} */}
                   </div>
 
-                  {/*}   {user?.is_admin && (
+                  {/* -- hide override checkbox
+                  {user?.is_admin && (
                      <div className="mb-4 flex items-center">
                       <label className="flex items-center space-x-2">
                         <input
