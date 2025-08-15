@@ -129,7 +129,7 @@ export default function OlympicScores() {
                 ...game,
                 hasScores: gamesWithScores.has(game.id)
               }))
-              .sort((a, b) => b.weight - a.weight);
+              .sort((a, b) => a.weight - b.weight);
           }
           return event;
         })
