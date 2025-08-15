@@ -295,9 +295,6 @@ export default function MyOlympicScores() {
                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                               Medal
                             </th>
-                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                              Time
-                            </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white">
@@ -345,21 +342,20 @@ export default function MyOlympicScores() {
                                   )}
                                 </div>
                               </td>
-                              <td className="px-3 py-4 text-sm text-gray-500">
-                                {score.time_to_play ? (
-                                  <div className="flex items-center">
-                                    <Clock className="h-4 w-4 mr-1" />
-                                    {score.time_to_play} min
-                                  </div>
-                                ) : (
-                                  '-'
-                                )}
-                              </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
+
+                    {/* Time Played Display */}
+                    {gameScores.length > 0 && gameScores[0].time_to_play && (
+                      <div className="mt-4 flex items-center text-sm text-gray-600">
+                        <Clock className="h-4 w-4 mr-2" />
+                        <span className="font-medium">Time Played:</span>
+                        <span className="ml-1">{gameScores[0].time_to_play} minutes</span>
+                      </div>
+                    )}
                   ) : (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
                       <Medal className="mx-auto h-12 w-12 text-gray-400" />
