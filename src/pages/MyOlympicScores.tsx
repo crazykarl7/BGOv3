@@ -94,7 +94,7 @@ export default function MyOlympicScores() {
                 isScored: scoredGames.has(game.id),
                 isPlayedByUser: userPlayedGames.has(game.id)
               }))
-              .sort((a, b) => b.weight - a.weight);
+              .sort((a, b) => a.weight - b.weight);
           }
           return event;
         })
