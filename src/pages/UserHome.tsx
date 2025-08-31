@@ -279,7 +279,7 @@ export default function UserHome() {
             )}
  <div>
   <h2 className="text-lg font-medium text-gray-900 mb-4">Playing Status</h2>
-   <div className="flex space-x-4">
+  
    <button
                   onClick={handleTogglePresence}
                   disabled={updatingPresence}
@@ -302,7 +302,7 @@ export default function UserHome() {
                       Pause
                     </>
                   )}
-                </button></div> </div>
+                </button></div> 
             {/* Available Olympics */}
             {availableOlympics.length > 0 && (
               <div className="mb-8">
