@@ -277,7 +277,7 @@ export default function UserHome() {
                 {error}
               </div>
             )}
- <div>
+ <div className="flex space-x-4>
   <h2 className="text-lg font-medium text-gray-900 mb-4">Playing Status</h2>
    <button
                   onClick={handleTogglePresence}
