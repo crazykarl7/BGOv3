@@ -278,13 +278,11 @@ export default function UserHome() {
               </div>
             )}
  <div>
-  <h2 className="text-lg font-medium text-gray-900 mb-4">Playing Status</h2>
-  
-   <button
+  <h2 className="text-lg font-medium text-gray-900 mb-4">Playing Status</h2><button
                   onClick={handleTogglePresence}
                   disabled={updatingPresence}
                   className={clsx(
-                    'flex items-center px-3 py-2  border border-transparent text-sm font-medium rounded-md text-white transition-colors w-full sm:w-auto' ,
+                    'flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white transition-colors',
                     playerIsPresent
                       ? 'bg-green-600 hover:bg-green-700'
                       : 'bg-gray-600 hover:bg-gray-700',
@@ -302,7 +300,7 @@ export default function UserHome() {
                       Pause
                     </>
                   )}
-                </button></div> 
+                </button> </div>
             {/* Available Olympics */}
             {availableOlympics.length > 0 && (
               <div className="mb-8">
